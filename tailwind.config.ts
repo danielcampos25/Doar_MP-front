@@ -1,3 +1,4 @@
+import { Questrial } from "next/font/google";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -13,6 +14,16 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      fontFamily: {
+        questrial: ['Questrial', 'sans-serif']
+      },
+      colors: {
+        white: '#FFFFFF',
+        lightBlue: '#28AFB0',
+        darkBlue: '#19647E',
+        softBlack: '#1A0000',
+        softGray: '#D9D9D9'
+      }
     },
   },
   plugins: [],
