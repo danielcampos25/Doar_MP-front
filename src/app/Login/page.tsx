@@ -6,9 +6,13 @@ export default function Login() {
         <div className="h-screen flex">
             <div className="w-1/2 h-screen bg-gradient-to-r from-darkBlue to-lightBlue flex flex-col justify-center items-center">
                 <Image src={logo} alt="Logo" width={400} height={400} />
-                <h1 className="text-9xl text-white font-questrial">do ar.com</h1>
+                <h1 className="text-8xl text-white font-questrial">do ar.com</h1>
             </div>
-            <div className="w-1/2 h-screen bg-white">
+            <div className="w-1/2 h-screen bg-white flex flex-col items-center justify-center">
+                <h1 className="text-lightBlue text-8xl font-questrial">Login</h1>
+                <div className="bg-lightBlue flex flex-col items-center justify-center w-[546px] h-[770px] rounded-2xl">
+
+                </div>
 
             </div>
         </div>
