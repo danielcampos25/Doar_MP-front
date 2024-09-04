@@ -1,5 +1,15 @@
 import Image from "next/image";
 import ReturnButton from "@/components/Return-button";
+import DonationCard from "@/components/DonationCard";
+
+const donations = [
+  {
+    id: 1,
+  },
+  {
+    id: 2,
+  },
+];
 
 export default function UserProfile() {
   return (
@@ -26,10 +36,23 @@ export default function UserProfile() {
           <h1 className="font-questrial text-white text-6xl pl-20">Username</h1>
         </div>
         <div className="h-[33.8rem] bg-white flex-col flex items-center overflow-y-auto">
-          <Image src={"/warning.svg"} alt="warning" width={330} height={330} />
-          <h1 className="font-questrial text-black text-6xl pt-20">
-            Você ainda não fez uma doação.
-          </h1>
+          {donations.length > 0 ? (
+            donations.map((donation) => (
+              <DonationCard key={donation.id} donationId={donation.id} />
+            ))
+          ) : (
+            <>
+              <Image
+                src={"/warning.svg"}
+                alt="warning"
+                width={330}
+                height={330}
+              />
+              <h1 className="font-questrial text-black text-6xl pt-20">
+                Você ainda não fez uma doação.
+              </h1>
+            </>
+          )}
         </div>
       </div>
     </div>
