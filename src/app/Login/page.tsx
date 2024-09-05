@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import logo from "../../../public/Doar.com 1.svg";
 import pfp from "../../../public/pfp.svg";
+import Link from "next/link";
 
 export default function Login() {
     const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -33,16 +34,8 @@ export default function Login() {
             </div>
             <div className="w-1/2 h-screen bg-white flex flex-col items-center justify-evenly">
                 <h1 className="text-lightBlue text-7xl font-questrial">Login</h1>
-                <div className="bg-lightBlue flex flex-col items-center justify-evenly w-[546px] h-[770px] rounded-2xl">
-                    <div onClick={handleImageClick} className="cursor-pointer">
-                        {profileImage ? (
-                            <img src={profileImage} alt="Profile" className="w-[200px] h-[200px] rounded-full object-cover" />
-                        ) : (
-                            <Image src={pfp} alt="pfp" width={200} height={200} />
-                        )}
-                    </div>
-                    <h1 onClick={handleImageClick} className="font-questrial text-white text-lg cursor-pointer">Escolher foto</h1>
-                    <div>
+                <div className="bg-lightBlue flex flex-col items-center justify-center w-[546px] h-[770px] rounded-2xl">
+                    <div className="pt-10">
                         <h1 className="font-questrial text-white text-xl">E-mail</h1>
                         <input className="bg-white w-[460px] h-[56px] rounded-full text-darkBlue text-2xl px-2 outline-none" />
                     </div>
@@ -59,8 +52,24 @@ export default function Login() {
                             {passwordVisible ? "🙈" : "👁️"}
                         </button>
                     </div>
+                    <div className="flex justify-center mt-10">
+                        <label
+                            htmlFor="item1"
+                            className="mr-4 text-white font-questrial text-[1.65rem]"
+                        >
+                            Sou uma instituição
+                        </label>
+                        <input
+                            type="checkbox"
+                            id="item1"
+                            name="instituicao"
+                            className="w-10 h-10 text-lightBlue bg-darkBlue rounded focus:ring-white font-questrial"
+                        ></input>
+                    </div>
                     <button className="bg-white w-[235px] h-[56px] border-4 border-darkBlue text-darkBlue text-4xl rounded-full font-questrial">Entrar</button>
-                    <button className="text-white text-3xl bg-transparent font-questrial">Não tem uma conta? Crie aqui!</button>
+                    <Link href='/Register'>
+                        <button className="text-white text-3xl bg-transparent font-questrial">Não tem uma conta? Crie aqui!</button>
+                    </Link>
                 </div>
                 <input
                     type="file"

@@ -28,7 +28,7 @@ export default function Register() {
                 Nome Completo
               </label>
               <input
-                className="w-full h-12 rounded-full px-4 text-xl mt-3"
+                className="w-full h-12 rounded-full px-4 text-xl mt-3 text-darkBlue outline-darkBlue"
                 type="text"
                 name="nomeCompleto"
                 required
@@ -40,7 +40,7 @@ export default function Register() {
                 Endereço
               </label>
               <input
-                className="w-full h-12 rounded-full px-4 text-xl mt-3"
+                className="w-full h-12 rounded-full px-4 text-xl mt-3 text-darkBlue outline-darkBlue"
                 type="text"
                 name="endereco"
                 required
@@ -52,7 +52,7 @@ export default function Register() {
                 E-mail
               </label>
               <input
-                className="w-full h-12 rounded-full px-4 text-xl mt-3"
+                className="w-full h-12 rounded-full px-4 text-xl mt-3 text-darkBlue outline-darkBlue"
                 type="email"
                 name="email"
                 required
@@ -64,7 +64,7 @@ export default function Register() {
                 Senha
               </label>
               <input
-                className="w-full h-12 rounded-full px-4 text-xl mt-3"
+                className="w-full h-12 rounded-full px-4 text-xl mt-3 text-darkBlue outline-darkBlue"
                 type="password"
                 name="senha"
                 required
