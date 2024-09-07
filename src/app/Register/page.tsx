@@ -1,26 +1,46 @@
+"use client"; // Add this line at the top of your file
+
+import { useState } from "react";
 import Image from "next/image";
 
 export default function Register() {
+  const [profileImage, setProfileImage] = useState("/profilepic.svg");
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfileImage(imageUrl);
+    }
+  };
+
   return (
-    <div className=" bg-gradient-to-r from-lightBlue to-darkBlue h-screen w-screen flex">
-      <div className=" h-screen w-1/2 bg-white flex items-center flex-col">
-        <h1 className=" text-lightBlue font-questrial text-8xl pt-7">
+    <div className="bg-gradient-to-r from-lightBlue to-darkBlue h-screen w-screen flex">
+      <div className="h-screen w-1/2 bg-white flex items-center flex-col">
+        <h1 className="text-lightBlue font-questrial text-8xl pt-7">
           Cadastro
         </h1>
-        <div className=" bg-lightBlue h-4/5 w-4/6 mt-5 rounded-2xl flex items-center flex-col">
-          <Image
-            src={"/profilepic.svg"}
-            alt="profile"
-            height={140}
-            width={140}
-            className="mt-5"
-          />
-          <Image
-            src={"/Camera.svg"}
-            alt="cam"
-            height={48}
-            width={48}
-            className=" absolute top-64 left-[31.5rem]"
+        <div className="bg-lightBlue h-4/5 w-4/6 mt-5 rounded-2xl flex items-center flex-col overflow-hidden">
+          <div className="relative w-32 h-32 mt-5 rounded-full overflow-hidden">
+            <label
+              htmlFor="file-upload"
+              className="rounded-full top-2 right-2 cursor-pointer"
+            >
+              <Image
+                src={profileImage}
+                alt="fill"
+                objectFit="cover"
+                height={140}
+                width={140}
+              />
+            </label>
+          </div>
+          <input
+            type="file"
+            id="file-upload"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
           />
           <form action="/submit" method="POST" className="space-y-6 w-full">
             <div className="flex justify-start w-full h-[15%] px-12 flex-col">
@@ -32,9 +52,8 @@ export default function Register() {
                 type="text"
                 name="nomeCompleto"
                 required
-              ></input>
+              />
             </div>
-
             <div className="flex justify-center w-full h-[15%] px-12 flex-col">
               <label className="text-white font-questrial text-2xl">
                 Endereço
@@ -44,9 +63,8 @@ export default function Register() {
                 type="text"
                 name="endereco"
                 required
-              ></input>
+              />
             </div>
-
             <div className="flex justify-center w-full h-[15%] px-12 flex-col">
               <label className="text-white font-questrial text-2xl">
                 E-mail
@@ -56,9 +74,8 @@ export default function Register() {
                 type="email"
                 name="email"
                 required
-              ></input>
+              />
             </div>
-
             <div className="flex justify-center w-full h-[15%] px-12 flex-col">
               <label className="text-white font-questrial text-2xl">
                 Senha
@@ -68,9 +85,8 @@ export default function Register() {
                 type="password"
                 name="senha"
                 required
-              ></input>
+              />
             </div>
-
             <div className="flex justify-center mt-10">
               <label
                 htmlFor="item1"
@@ -83,15 +99,14 @@ export default function Register() {
                 id="item1"
                 name="instituicao"
                 className="w-10 h-10 text-lightBlue bg-darkBlue rounded focus:ring-white font-questrial"
-              ></input>
+              />
             </div>
-
             <div className="flex justify-center mt-8">
               <button
                 type="submit"
                 className="bg-white hover:bg-darkBlue text-lightBlue font-questrial py-2 px-6 rounded-full text-xl"
               >
-                Enviar
+                Cadastrar
               </button>
             </div>
           </form>
@@ -105,7 +120,7 @@ export default function Register() {
           width={400}
           className="ml-72 mt-36"
         />
-        <h1 className=" text-white font-questrial text-9xl ml-52 mt-16">
+        <h1 className="text-white font-questrial text-9xl ml-52 mt-16">
           do ar.com
         </h1>
       </div>
