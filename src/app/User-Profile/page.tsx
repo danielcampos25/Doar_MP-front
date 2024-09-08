@@ -1,17 +1,66 @@
+"use client";
+
 import Image from "next/image";
 import ReturnButton from "@/components/Return-button";
-import DonationCard from "@/components/DonationCard";
+import DonationCardUser from "@/components/DonationCardUser";
+import LocationModalUser from "@/components/LocationModalUser";
+import { useState } from "react";
 
 const donations = [
   {
     id: 1,
+    title: "Doação 1",
+    firstAddress: "Endereço 1",
+    finalDestination: "Endereço final",
+    history: [
+      { address: "Endereço 1", date: "01/09/2023", time: "10:00" },
+      { address: "Endereço 2", date: "02/09/2023", time: "12:30" },
+      { address: "Endereço final", date: "03/09/2023", time: "14:15" },
+    ],
   },
   {
     id: 2,
+    title: "Doação 2",
+    firstAddress: "Endereço A",
+    finalDestination: "Endereço final",
+    history: [
+      { address: "Endereço A", date: "01/09/2023", time: "10:00" },
+      { address: "Endereço B", date: "02/09/2023", time: "12:30" },
+      { address: "Endereço C", date: "03/09/2023", time: "14:15" },
+    ],
+  },
+  {
+    id: 3,
+    title: "Doação 3",
+    firstAddress: "Endereço 1",
+    finalDestination: "Endereço final",
+    history: [
+      { address: "Endereço 1", date: "01/09/2023", time: "10:00" },
+      { address: "Endereço 2", date: "02/09/2023", time: "12:30" },
+      { address: "Endereço 3", date: "03/09/2023", time: "14:15" },
+      { address: "Endereço 4", date: "06/09/2023", time: "15:49" },
+    ],
   },
 ];
 
 export default function UserProfile() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [selectedDonation, setSelectedDonation] = useState<null | {
+    id: number;
+    title: string;
+  }>(null);
+
+  const openModal = (donation: { id: number; title: string }) => {
+    setSelectedDonation(donation);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedDonation(null);
+  };
+
   return (
     <div className="h-screen w-screen bg-gradient-to-r from-lightBlue to-darkBlue flex justify-center">
       <ReturnButton />
@@ -38,7 +87,11 @@ export default function UserProfile() {
         <div className="h-[33.8rem] bg-white flex-col flex items-center overflow-y-auto">
           {donations.length > 0 ? (
             donations.map((donation) => (
-              <DonationCard key={donation.id} donationId={donation.id} />
+              <DonationCardUser
+                key={donation.id}
+                donationTitle={donation.title}
+                onClick={() => openModal(donation)}
+              />
             ))
           ) : (
             <>
@@ -55,6 +108,12 @@ export default function UserProfile() {
           )}
         </div>
       </div>
+      {isModalOpen && selectedDonation && (
+        <LocationModalUser
+          closeModal={closeModal}
+          donationTitle={selectedDonation.title}
+        />
+      )}
     </div>
   );
 }
