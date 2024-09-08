@@ -1,11 +1,16 @@
 import Image from "next/image";
+import DeliveryTimeline from "./DeliveryTimeline";
 
 export default function LocationModalUser({
   closeModal,
-  donationTitle,
+  donation,
 }: {
   closeModal: () => void;
-  donationTitle: string;
+  donation: {
+    title: string;
+    history: { address: string; date: string; time: string }[];
+    finalDestination: string;
+  };
 }) {
   return (
     <div>
@@ -28,21 +33,29 @@ export default function LocationModalUser({
               />
               <div className="mx-20">
                 <h1 className="text-white font-questrial text-8xl mb-6">
-                  {donationTitle}
+                  {donation.title}
                 </h1>
                 <h2 className="text-white font-questrial text-6xl">
-                  Enviada em dd/mm/yy
+                  Enviada em {donation.history[0].date}
                 </h2>
               </div>
             </div>
             <h3 className="text-white font-questrial text-5xl">
-              Último Escaneamento: dd/mm/yy às HH:MM
+              Último Escaneamento:{" "}
+              {donation.history[donation.history.length - 1].date} às{" "}
+              {donation.history[donation.history.length - 1].time}
             </h3>
           </div>
           <div className="mx-20">
             <h3 className="text-white font-questrial text-5xl">
               Histórico de entrega
             </h3>
+            <div className=" overflow-y-auto">
+              <DeliveryTimeline
+                history={donation.history}
+                finalDestination={donation.finalDestination}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -49,9 +49,16 @@ export default function UserProfile() {
   const [selectedDonation, setSelectedDonation] = useState<null | {
     id: number;
     title: string;
+    history: { address: string; date: string; time: string }[];
+    finalDestination: string;
   }>(null);
 
-  const openModal = (donation: { id: number; title: string }) => {
+  const openModal = (donation: {
+    id: number;
+    title: string;
+    history: { address: string; date: string; time: string }[];
+    finalDestination: string;
+  }) => {
     setSelectedDonation(donation);
     setIsModalOpen(true);
   };
@@ -73,13 +80,6 @@ export default function UserProfile() {
               className="rounded-full"
               width={196}
               height={196}
-            />
-            <Image
-              src={"/camera-icon.svg"}
-              alt="icon"
-              className="absolute top-60 left-[42.8rem]"
-              width={48}
-              height={48}
             />
           </div>
           <h1 className="font-questrial text-white text-6xl pl-20">Username</h1>
@@ -111,7 +111,7 @@ export default function UserProfile() {
       {isModalOpen && selectedDonation && (
         <LocationModalUser
           closeModal={closeModal}
-          donationTitle={selectedDonation.title}
+          donation={selectedDonation}
         />
       )}
     </div>
