@@ -27,6 +27,9 @@ export default function Feed() {
                 inst.name.toLowerCase().includes(value.toLowerCase())
             )
         );
+        if (!value) {
+            setSelectedInstitution('');
+        }
     };
 
     const handleInstitutionSelect = (name: SetStateAction<string>) => {
