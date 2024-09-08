@@ -3,6 +3,8 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import logo from "../../../public/Doar.com 1.svg";
 import pfp from "../../../public/pfp.svg";
+import hide from "../../../public/hide.png";
+import show from "../../../public/show.png";
 
 export default function Login() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -59,7 +61,21 @@ export default function Login() {
               onClick={togglePasswordVisibility}
               className="absolute right-4 top-[50%] transform text-darkBlue text-xl"
             >
-              {passwordVisible ? "🙈" : "👁️"}
+              {passwordVisible ? (
+                <Image
+                  src="/hide.png" // Use the correct path for your hide icon
+                  alt="Hide password"
+                  width={24} // Adjust width and height as needed
+                  height={24}
+                />
+              ) : (
+                <Image
+                  src="/show.png" // Use the correct path for your show icon
+                  alt="Show password"
+                  width={24} // Adjust width and height as needed
+                  height={24}
+                />
+              )}
             </button>
           </div>
           <button className="bg-white w-[235px] h-[56px] border-4 border-darkBlue text-darkBlue text-4xl rounded-full font-questrial">
