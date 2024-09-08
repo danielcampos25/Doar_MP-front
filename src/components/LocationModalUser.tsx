@@ -47,14 +47,11 @@ export default function LocationModalUser({
             </h3>
           </div>
           <div className="mx-20">
-            <h3 className="text-white font-questrial text-5xl">
+            <h3 className="text-white font-questrial text-5xl mb-5">
               Histórico de entrega
             </h3>
-            <div className=" overflow-y-auto">
-              <DeliveryTimeline
-                history={donation.history}
-                finalDestination={donation.finalDestination}
-              />
+            <div className="overflow-y-auto max-h-48">
+              <DeliveryTimeline history={donation.history} />
             </div>
           </div>
         </div>
