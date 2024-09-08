@@ -4,8 +4,18 @@ import { useState } from "react";
 import Image from "next/image";
 
 export default function Register() {
+  // State to track the profile image
   const [profileImage, setProfileImage] = useState("/profilepic.svg");
 
+  // State to track if the password is visible or not
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  // Function to toggle password visibility
+  const togglePasswordVisibility = () => {
+    setPasswordVisible((prevState) => !prevState);
+  };
+
+  // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -76,16 +86,39 @@ export default function Register() {
                 required
               />
             </div>
-            <div className="flex justify-center w-full h-[15%] px-12 flex-col">
+            <div className="relative flex justify-center w-full h-[15%] px-12 flex-col">
               <label className="text-white font-questrial text-2xl">
                 Senha
               </label>
-              <input
-                className="w-full h-12 rounded-full px-4 text-xl mt-3"
-                type="password"
-                name="senha"
-                required
-              />
+              <div className="relative w-full mt-3">
+                <input
+                  className="w-full h-12 rounded-full px-4 text-xl"
+                  type={passwordVisible ? "text" : "password"}
+                  name="senha"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-darkBlue text-xl"
+                >
+                  {passwordVisible ? (
+                    <Image
+                      src="/hide.png"
+                      alt="Hide password"
+                      width={24}
+                      height={24}
+                    />
+                  ) : (
+                    <Image
+                      src="/show.png"
+                      alt="Show password"
+                      width={24}
+                      height={24}
+                    />
+                  )}
+                </button>
+              </div>
             </div>
             <div className="flex justify-center mt-10">
               <label
