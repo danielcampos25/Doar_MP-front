@@ -36,7 +36,7 @@ export default function Login() {
       <div className="w-1/2 h-screen bg-white flex flex-col items-center justify-evenly">
         <h1 className="text-lightBlue text-7xl font-questrial">Login</h1>
         <div className="bg-lightBlue flex flex-col items-center justify-evenly w-[546px] h-[770px] rounded-2xl">
-          <div onClick={handleImageClick} className="cursor-pointer">
+          <div>
             {profileImage ? (
               <Image
                 src={profileImage}
