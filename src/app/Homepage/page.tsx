@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Homepage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-r from-lightBlue to-darkBlue">
-      <header className="fixed top-0 w-full h-[204px] bg-softBlack bg-opacity-25 flex items-center">
+      <header className="fixed top-0 w-full h-[204px] bg-softBlack bg-opacity-25 flex items-center z-50">
         <div className="ml-40">
           <Image
             src="/Doar-logo.svg"
@@ -69,7 +69,7 @@ export default function Homepage() {
         </div>
       </section>
 
-      <footer className="fixed bottom-0 w-full h-[102px] bg-softGray bg-opacity-50 flex items-center">
+      <footer className="fixed bottom-0 w-full h-[102px] bg-softGray bg-opacity-50 flex items-center z-50">
         <h2 className="font-questrial text-2xl ml-36 text-softBlack">
           do_ar2024@gmail.com
         </h2>
