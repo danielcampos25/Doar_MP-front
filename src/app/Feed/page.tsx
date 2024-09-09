@@ -1,9 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
-import axios from 'axios'
+import { useRouter } from 'next/navigation'; // Para redirecionamento
+import axios from 'axios';
 import Header from '../../components/Header';
 import DonationModal from '../../components/Donation-Modal';
-import Image from "next/image";
+import Image from 'next/image';
 import Search from '../../../public/Search.svg';
 import Box from '../../../public/box.svg';
 
@@ -13,22 +14,40 @@ export default function Feed() {
     const [isFocused, setIsFocused] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedInstitution, setSelectedInstitution] = useState('');
+    const router = useRouter();
 
     useEffect(() => {
         const fetchInstitutions = async () => {
+            const token = localStorage.getItem('token');
+            console.log(token)
+            
+            if (!token) {
+                // Se não houver token, redirecione para a página de login
+                router.push('/Login');
+                return;
+            }
+      
             try {
-                const response = await axios.get('http://localhost:3001/instituicao');
+                const response = await axios.get('http://localhost:3001/instituicoes', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 const institutions = response.data.map((inst: { razaoSocial: string }) => ({
                     name: inst.razaoSocial,
                 }));
                 setFilteredInstitutions(institutions);
             } catch (error) {
                 console.error("Error fetching institutions:", error);
+                if (error.response && error.response.status === 401) {
+                    // Se a resposta do servidor for 401 (não autorizado), redirecione para o login
+                    router.push('/Login');
+                }
             }
         };
 
         fetchInstitutions();
-    }, []);
+    }, [router]);
 
     const handleSearchChange = (e: { target: { value: any; }; }) => {
         const value = e.target.value;
