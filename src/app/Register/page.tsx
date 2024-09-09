@@ -1,21 +1,17 @@
-"use client"; // Add this line at the top of your file
+"use client";
 
 import { useState } from "react";
 import Image from "next/image";
 
 export default function Register() {
-  // State to track the profile image
   const [profileImage, setProfileImage] = useState("/profilepic.svg");
 
-  // State to track if the password is visible or not
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  // Function to toggle password visibility
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
   };
 
-  // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
