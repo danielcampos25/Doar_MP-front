@@ -3,6 +3,7 @@
 import Image from "next/image";
 import ReturnButton from "@/components/Return-button";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Donation {
   id: number;
@@ -23,9 +24,15 @@ export default function InstitutionProfile({
     (donation) => donation.estado === abaAtiva
   );
 
+  const router = useRouter();
+
+  const handleReturnClick = () => {
+    router.push("/Feed");
+  };
+
   return (
     <div className="h-screen w-screen bg-gradient-to-r from-lightBlue to-darkBlue flex justify-center">
-      <ReturnButton />
+      <ReturnButton onClick={handleReturnClick} />
       <div className="w-3/5 h-screen">
         <div className="w-full h-96 bg-gradient-to-b from-lightBlue to-white flex items-center">
           <div className="px-20">
@@ -35,13 +42,6 @@ export default function InstitutionProfile({
               className="rounded-full"
               width={196}
               height={196}
-            />
-            <Image
-              src={"/camera-icon.svg"}
-              alt="icon"
-              className="absolute top-60 left-[42.8rem]"
-              width={48}
-              height={48}
             />
           </div>
           <h1 className="font-questrial text-white text-6xl pl-20">
