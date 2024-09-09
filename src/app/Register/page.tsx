@@ -36,7 +36,7 @@ export default function Register() {
     console.log(values);
     try {
       const endpoint = values.instituicao
-        ? "http://localhost:3001/institutions" // Endpoint to create an institution
+        ? "http://localhost:3001/instituicao" // Endpoint to create an institution
         : "http://localhost:3001/users"; // Endpoint to create a user
 
       const payload = values.instituicao
