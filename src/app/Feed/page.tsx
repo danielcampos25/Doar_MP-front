@@ -1,29 +1,40 @@
 'use client';
-import { SetStateAction, useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios'
 import Header from '../../components/Header';
 import DonationModal from '../../components/Donation-Modal';
 import Image from "next/image";
 import Search from '../../../public/Search.svg';
 import Box from '../../../public/box.svg';
 
-const Institutions = [
-    { name: "Ajudar" },
-    { name: "BrasilAjuda" },
-    { name: "Coitados" }
-].sort((a, b) => a.name.localeCompare(b.name));
-
 export default function Feed() {
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredInstitutions, setFilteredInstitutions] = useState(Institutions);
+    const [filteredInstitutions, setFilteredInstitutions] = useState([]);
     const [isFocused, setIsFocused] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedInstitution, setSelectedInstitution] = useState('');
+
+    useEffect(() => {
+        const fetchInstitutions = async () => {
+            try {
+                const response = await axios.get('http://localhost:3001/instituicao');
+                const institutions = response.data.map((inst: { razaoSocial: string }) => ({
+                    name: inst.razaoSocial,
+                }));
+                setFilteredInstitutions(institutions);
+            } catch (error) {
+                console.error("Error fetching institutions:", error);
+            }
+        };
+
+        fetchInstitutions();
+    }, []);
 
     const handleSearchChange = (e: { target: { value: any; }; }) => {
         const value = e.target.value;
         setSearchTerm(value);
         setFilteredInstitutions(
-            Institutions.filter(inst => 
+            filteredInstitutions.filter(inst => 
                 inst.name.toLowerCase().includes(value.toLowerCase())
             )
         );
@@ -32,7 +43,7 @@ export default function Feed() {
         }
     };
 
-    const handleInstitutionSelect = (name: SetStateAction<string>) => {
+    const handleInstitutionSelect = (name: string) => {
         setSearchTerm(name);
         setSelectedInstitution(name);
         setIsFocused(false);
