@@ -35,16 +35,30 @@ export default function Register() {
     setFormError("");
     console.log(values);
     try {
-      const response = await axios.post("http://localhost:3001/users", {
-        nome: values.nomeCompleto,
-        email: values.email,
-        senha: values.senha,
-        fotoPerfil: profileImage,
-        endereco: values.endereco,
-      });
-      console.log("User created successfully:", response.data);
+      const endpoint = values.instituicao
+        ? "http://localhost:3001/institutions" // Endpoint to create an institution
+        : "http://localhost:3001/users"; // Endpoint to create a user
+
+      const payload = values.instituicao
+        ? { // Payload for creating an institution
+            nome: values.nomeCompleto,
+            email: values.email,
+            senha: values.senha,
+            endereco: values.endereco,
+            fotoPerfil: profileImage,
+          }
+        : { // Payload for creating a user
+            nome: values.nomeCompleto,
+            email: values.email,
+            senha: values.senha,
+            endereco: values.endereco,
+            fotoPerfil: profileImage,
+          };
+
+      const response = await axios.post(endpoint, payload);
+      console.log(`${values.instituicao ? "Institution" : "User"} created successfully:`, response.data);
     } catch (error: any) {
-      setFormError(error.response?.data?.message || "Erro ao criar usuário");
+      setFormError(error.response?.data?.message || `Erro ao criar ${values.instituicao ? "instituição" : "usuário"}`);
     } finally {
       setSubmitting(false);
     }
