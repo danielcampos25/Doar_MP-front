@@ -32,16 +32,13 @@ export default function Register() {
         </h1>
         <div className="bg-lightBlue h-4/5 w-4/6 mt-5 rounded-2xl flex items-center flex-col overflow-hidden">
           <div className="relative w-32 h-32 mt-5 rounded-full overflow-hidden">
-            <label
-              htmlFor="file-upload"
-              className="rounded-full top-2 right-2 cursor-pointer"
-            >
+            <label htmlFor="file-upload" className="cursor-pointer">
               <Image
                 src={profileImage}
-                alt="fill"
+                alt="Profile picture"
+                layout="fill"
                 objectFit="cover"
-                height={140}
-                width={140}
+                className="rounded-full"
               />
             </label>
           </div>
