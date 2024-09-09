@@ -77,7 +77,7 @@ export default function DonationModal({ isOpen, institution, onClose }: Donation
             <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
 
             <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
-                <div className="relative bg-lightBlue w-3/4 max-h-screen border-4 border-white rounded-2xl flex flex-col p-8 z-50 items-center overflow-y-auto">
+                <div className="relative bg-lightBlue w-3/4 max-h-[764px] border-4 border-white rounded-2xl flex flex-col p-8 z-50 items-center overflow-y-auto">
                     
                     {/* Botão de Fechar */}
                     <button
