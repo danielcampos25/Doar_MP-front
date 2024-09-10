@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Para redirecionamento
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Header from '../../components/Header';
 import DonationModal from '../../components/Donation-Modal';
@@ -13,16 +13,14 @@ export default function Feed() {
     const [filteredInstitutions, setFilteredInstitutions] = useState([]);
     const [isFocused, setIsFocused] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedInstitution, setSelectedInstitution] = useState('');
+    const [selectedInstitution, setSelectedInstitution] = useState({ name: '', id: null });
     const router = useRouter();
 
     useEffect(() => {
         const fetchInstitutions = async () => {
             const token = localStorage.getItem('token');
-            console.log(token)
-            
+
             if (!token) {
-                // Se não houver token, redirecione para a página de login
                 router.push('/Login');
                 return;
             }
@@ -33,14 +31,15 @@ export default function Feed() {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                const institutions = response.data.map((inst: { razaoSocial: string }) => ({
+                const institutions = response.data.map((inst: { id: number, razaoSocial: string }) => ({
+                    institutionId: inst.id,
                     name: inst.razaoSocial,
                 }));
                 setFilteredInstitutions(institutions);
+                console.log(institutions)
             } catch (error) {
                 console.error("Error fetching institutions:", error);
                 if (error.response && error.response.status === 401) {
-                    // Se a resposta do servidor for 401 (não autorizado), redirecione para o login
                     router.push('/Login');
                 }
             }
@@ -58,18 +57,19 @@ export default function Feed() {
             )
         );
         if (!value) {
-            setSelectedInstitution('');
+            setSelectedInstitution({ name: '', id: null });
         }
     };
 
     const handleInstitutionSelect = (name: string) => {
+        const institution = filteredInstitutions.find(inst => inst.name === name);
         setSearchTerm(name);
-        setSelectedInstitution(name);
+        setSelectedInstitution({ name, id: institution ? institution.institutionId : null });
         setIsFocused(false);
     };
 
     const handleDonateClick = () => {
-        if (selectedInstitution) {
+        if (selectedInstitution.id !== null) {
             setIsModalOpen(true);
         } else {
             alert('Por favor, selecione uma instituição.');
@@ -124,7 +124,8 @@ export default function Feed() {
 
             <DonationModal
                 isOpen={isModalOpen}
-                institution={selectedInstitution}
+                institution={selectedInstitution.name}
+                selectedId={selectedInstitution.id}
                 onClose={() => setIsModalOpen(false)}
             />
         </main>

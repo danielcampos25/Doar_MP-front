@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import X from '../../public/X.svg';
+import axios from 'axios';
 
 interface Item {
     name: string;
@@ -11,10 +12,11 @@ interface Item {
 interface DonationModalProps {
     isOpen: boolean;
     institution: string;
+    selectedId: number; // Recebe o ID da instituição
     onClose: () => void;
 }
 
-export default function DonationModal({ isOpen, institution, onClose }: DonationModalProps) {
+export default function DonationModal({ isOpen, institution, selectedId, onClose }: DonationModalProps) {
     const [items, setItems] = useState<Item[]>([]);
     const [currentItem, setCurrentItem] = useState<string>('');
     const [title, setTitle] = useState<string>(''); // Estado para armazenar o título
@@ -37,41 +39,66 @@ export default function DonationModal({ isOpen, institution, onClose }: Donation
 
     if (!isOpen) return null;
 
-    const addItem = () => {
-        if (currentItem.trim() === '') return;
-        setItems([...items, { name: currentItem, quantity: 1 }]);
-        setCurrentItem('');
-    };
-
-    const increaseQuantity = (index: number) => {
-        const newItems = [...items];
-        newItems[index].quantity += 1;
-        setItems(newItems);
-    };
-
-    const decreaseQuantity = (index: number) => {
-        const newItems = [...items];
-        if (newItems[index].quantity > 1) {
-            newItems[index].quantity -= 1;
-        } else {
-            newItems.splice(index, 1);
-        }
-        setItems(newItems);
-    };
-
-    const handleSubmit = () => {
-        // Verificação para garantir que o título, itens e descrição não estejam vazios
-        if (title.trim() === '' || items.length === 0 || description.trim() === '') {
+    const handleSubmit = async () => {
+        if (title.trim() === '' || description.trim() === '') {
             setError('Por favor, preencha todos os campos.');
             return;
         }
-
-        // Se tudo estiver preenchido, remove a mensagem de erro
         setError('');
-        // Aqui você pode adicionar a lógica para enviar os dados
-        console.log('Enviado com sucesso!');
-    };
+    
+        const token = localStorage.getItem('token');
+        console.log('Token:', token);
+    
+        if (!token) {
+            setError('Usuário não autenticado.');
+            return;
+        }
+    
+        try {
+            // Obter o ID do usuário autenticado
+            const userResponse = await axios.get('http://localhost:3001/auth/me', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log('User Response:', userResponse.data);
+            const usuarioID = userResponse.data.sub;
+            console.log('User ID:', usuarioID)
+    
+            if (!usuarioID) {
+                setError('Não foi possível obter o ID do usuário.');
+                return;
+            }
 
+            console.log(selectedId)
+  
+            const donationData = {
+                usuarioID,
+                destinatarioID: selectedId,
+                descricao: description,
+                qtdItens: 0,
+                QRCode: 'aaaaaa', // Aqui você pode gerar o QRCode posteriormente
+                codigoRastreamento: 'aaaaaaaaaa', // Implementar lógica de rastreamento
+                entregue: false,
+            };
+    
+            // Enviar os dados para o backend
+            const response = await axios.post('http://localhost:3001/donations', donationData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log('Doação criada com sucesso:', response.data);
+    
+            // Limpar o formulário após o sucesso
+            resetForm();
+            // Exibir QR code em um toast ou realizar outra ação aqui
+        } catch (error) {
+            console.error('Erro ao criar doação:', error);
+            setError('Ocorreu um erro ao criar a doação. Tente novamente.');
+        }
+    };
+    
     return (
         <>
             <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
@@ -108,53 +135,6 @@ export default function DonationModal({ isOpen, institution, onClose }: Donation
                         />
                     </div>
 
-                    {/* Título "Itens a serem doados" */}
-                    <div className="flex flex-col items-center w-full mb-4">
-                        <label
-                            htmlFor="donation-item"
-                            className="font-questrial text-4xl text-white mb-4"
-                        >
-                            Itens a serem doados:
-                        </label>
-                    </div>
-
-                    {/* Retângulo branco para os itens e input com borda azul escuro */}
-                    <div className="flex flex-col items-center w-3/4 bg-white rounded-3xl p-4 mb-8 border-4 border-darkBlue">
-                        {/* Área de itens */}
-                        <div className="w-full">
-                            {items.map((item, index) => (
-                                <div key={index} className="flex justify-between items-center mb-4">
-                                    <span className="text-darkBlue text-2xl">{item.name}</span>
-                                    <div className="flex items-center">
-                                        <button
-                                            onClick={() => decreaseQuantity(index)}
-                                            className="bg-darkBlue text-white text-2xl w-8 h-8 rounded-full"
-                                        >
-                                            -
-                                        </button>
-                                        <span className="mx-4 text-darkBlue text-2xl">{item.quantity}</span>
-                                        <button
-                                            onClick={() => increaseQuantity(index)}
-                                            className="bg-darkBlue text-white text-2xl w-8 h-8 rounded-full"
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Input para adicionar novo item */}
-                        <input
-                            id="donation-item"
-                            value={currentItem}
-                            onChange={(e) => setCurrentItem(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter') addItem() }}
-                            className="w-full h-14 text-darkBlue text-2xl p-4 rounded-full outline-none mt-1"
-                            placeholder="Adicionar item (Digite aqui)"
-                        />
-                    </div>
-
                     {/* Campo de Descrição */}
                     <div className="flex flex-col items-center w-full mb-8">
                         <label
@@ -163,12 +143,18 @@ export default function DonationModal({ isOpen, institution, onClose }: Donation
                         >
                             Descrição:
                         </label>
-                        <input
+                        <textarea
                             id="donation-description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-3/4 h-14 text-darkBlue text-2xl p-4 rounded-full border-4 border-darkBlue outline-none"
-                            placeholder="Digite a descrição da doação"
+                            className="w-3/4 text-darkBlue text-2xl p-4 rounded-2xl border-4 border-darkBlue outline-none resize-none"
+                            placeholder="Descreva os itens a serem doados. Você não poderá alterar isso futuramente."
+                            rows={1} // Set initial height
+                            onInput={(e) => {
+                                const target = e.target as HTMLTextAreaElement;
+                                target.style.height = 'auto'; // Reset height
+                                target.style.height = `${target.scrollHeight}px`; // Adjust height based on content
+                            }}
                         />
                     </div>
 
