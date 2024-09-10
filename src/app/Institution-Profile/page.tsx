@@ -5,7 +5,7 @@ import ReturnButton from "@/components/Return-button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DonationCardUser from "@/components/DonationCardUser";
-import LocationModalUser from "@/components/LocationModalUser";
+import LocationModalInstitution from "@/components/LocationModalInstitution";
 
 interface Donation {
   id: number;
@@ -145,7 +145,7 @@ export default function InstitutionProfile({
             </h1>
           </button>
         </div>
-        <div className="h-[30.33rem] bg-white flex-col flex items-center overflow-y-auto">
+        <div className="h-[30.3rem] bg-white flex-col flex items-center overflow-y-auto">
           {filteredDonations.length > 0 ? (
             filteredDonations.map((donation) => (
               <DonationCardUser
@@ -182,7 +182,7 @@ export default function InstitutionProfile({
         </div>
       </div>
       {isModalOpen && selectedDonation && (
-        <LocationModalUser
+        <LocationModalInstitution
           closeModal={closeModal}
           donation={selectedDonation}
         />
