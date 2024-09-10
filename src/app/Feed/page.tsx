@@ -1,45 +1,75 @@
 'use client';
-import { SetStateAction, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 import Header from '../../components/Header';
 import DonationModal from '../../components/Donation-Modal';
-import Image from "next/image";
+import Image from 'next/image';
 import Search from '../../../public/Search.svg';
 import Box from '../../../public/box.svg';
 
-const Institutions = [
-    { name: "Ajudar" },
-    { name: "BrasilAjuda" },
-    { name: "Coitados" }
-].sort((a, b) => a.name.localeCompare(b.name));
-
 export default function Feed() {
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredInstitutions, setFilteredInstitutions] = useState(Institutions);
+    const [filteredInstitutions, setFilteredInstitutions] = useState([]);
     const [isFocused, setIsFocused] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedInstitution, setSelectedInstitution] = useState('');
+    const [selectedInstitution, setSelectedInstitution] = useState({ name: '', id: null });
+    const router = useRouter();
+
+    useEffect(() => {
+        const fetchInstitutions = async () => {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                router.push('/Login');
+                return;
+            }
+      
+            try {
+                const response = await axios.get('http://localhost:3001/instituicoes', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const institutions = response.data.map((inst: { id: number, razaoSocial: string }) => ({
+                    institutionId: inst.id,
+                    name: inst.razaoSocial,
+                }));
+                setFilteredInstitutions(institutions);
+                console.log(institutions)
+            } catch (error) {
+                console.error("Error fetching institutions:", error);
+                if (error.response && error.response.status === 401) {
+                    router.push('/Login');
+                }
+            }
+        };
+
+        fetchInstitutions();
+    }, [router]);
 
     const handleSearchChange = (e: { target: { value: any; }; }) => {
         const value = e.target.value;
         setSearchTerm(value);
         setFilteredInstitutions(
-            Institutions.filter(inst => 
+            filteredInstitutions.filter(inst => 
                 inst.name.toLowerCase().includes(value.toLowerCase())
             )
         );
         if (!value) {
-            setSelectedInstitution('');
+            setSelectedInstitution({ name: '', id: null });
         }
     };
 
-    const handleInstitutionSelect = (name: SetStateAction<string>) => {
+    const handleInstitutionSelect = (name: string) => {
+        const institution = filteredInstitutions.find(inst => inst.name === name);
         setSearchTerm(name);
-        setSelectedInstitution(name);
+        setSelectedInstitution({ name, id: institution ? institution.institutionId : null });
         setIsFocused(false);
     };
 
     const handleDonateClick = () => {
-        if (selectedInstitution) {
+        if (selectedInstitution.id !== null) {
             setIsModalOpen(true);
         } else {
             alert('Por favor, selecione uma instituição.');
@@ -94,7 +124,8 @@ export default function Feed() {
 
             <DonationModal
                 isOpen={isModalOpen}
-                institution={selectedInstitution}
+                institution={selectedInstitution.name}
+                selectedId={selectedInstitution.id}
                 onClose={() => setIsModalOpen(false)}
             />
         </main>
