@@ -43,7 +43,7 @@ export default function Login() {
       const response = await axios.post("http://localhost:3001/auth/login", {
         email: values.email,
         senha: values.senha,
-        userType: isInstitution ? "instituicao" : "user",
+        userType: values.userType,
       });
       console.log(response.data);
       alert("Login successful!");
@@ -75,11 +75,11 @@ export default function Login() {
           </div>
 
           <Formik
-            initialValues={{ email: "", senha: "" }}
+            initialValues={{ email: "", senha: "", userType: "user" }}
             validationSchema={loginSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting }) => (
+            {({ isSubmitting, setFieldValue }) => (
               <Form className="space-y-6 w-full flex flex-col items-center">
                 <div>
                   <h1 className="font-questrial text-white text-xl">E-mail</h1>
@@ -126,7 +126,7 @@ export default function Login() {
                     id="instituicao"
                     name="instituicao"
                     className="w-10 h-10 text-lightBlue bg-darkBlue focus:ring-white font-questrial mr-5"
-                    onChange={(e) => setIsInstitution(e.target.checked)}
+                    onChange={(e) => setFieldValue("userType", e.target.checked ? "instituicao" : "user")}
                   />
                   <label
                     htmlFor="instituicao"
