@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "../../../public/Doar.com 1.svg";
 import pfp from "../../../public/pfp.svg";
@@ -15,6 +16,7 @@ export default function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isInstitution, setIsInstitution] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -45,8 +47,16 @@ export default function Login() {
         senha: values.senha,
         userType: values.userType,
       });
-      console.log(response.data);
+      
+      const { access_token } = response.data; // assuming access_token is in response.data
+  
+      // Save the token in localStorage
+      localStorage.setItem("access_token", access_token);
+  
       alert("Login successful!");
+  
+      // Redirect to feed
+      router.push('/Feed');
     } catch (error) {
       console.error(error);
       alert("Login failed. Please check your credentials.");
