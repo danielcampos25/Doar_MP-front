@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "../../../public/Doar.com 1.svg";
 import pfp from "../../../public/pfp.svg";
@@ -15,6 +16,7 @@ export default function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isInstitution, setIsInstitution] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter()
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -45,13 +47,21 @@ export default function Login() {
         senha: values.senha,
         userType: values.userType,
       });
+  
+      // Supondo que o token esteja na resposta em 'response.data.token'
+      const token = response.data.access_token;
+      
+      // Salve o token no localStorage
+      localStorage.setItem("token", token);
       console.log(response.data);
       alert("Login successful!");
+      router.push('/Feed');
     } catch (error) {
       console.error(error);
       alert("Login failed. Please check your credentials.");
     }
   };
+  
 
   return (
     <div className="h-screen flex">
