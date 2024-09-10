@@ -36,26 +36,55 @@ export default function Register() {
     console.log(values);
     try {
       const endpoint = values.instituicao
-        ? "http://localhost:3001/instituicao" // Endpoint to create an institution
+        ? "http://localhost:3001/instituicoes" // Endpoint to create an institution
         : "http://localhost:3001/users"; // Endpoint to create a user
 
-      const payload = values.instituicao
-        ? { // Payload for creating an institution
-            nome: values.nomeCompleto,
-            email: values.email,
-            senha: values.senha,
-            endereco: values.endereco,
-            fotoPerfil: profileImage,
-          }
-        : { // Payload for creating a user
-            nome: values.nomeCompleto,
-            email: values.email,
-            senha: values.senha,
-            endereco: values.endereco,
-            fotoPerfil: profileImage,
-          };
+      // const payload = values.instituicao
+      //   ? { // Payload for creating an institution
+      //       razaoSocial: values.nomeCompleto,
+      //       email: values.email,
+      //       senha: values.senha,
+      //       endereco: values.endereco,
+      //       fotoPerfil: profileImage,
+      //     }
+      //   : { // Payload for creating a user
+      //       nome: values.nomeCompleto,
+      //       email: values.email,
+      //       senha: values.senha,
+      //       endereco: values.endereco,
+      //       fotoPerfil: profileImage,
+      //     };
 
-      const response = await axios.post(endpoint, payload);
+      // Criando o FormData para enviar a imagem e os outros campos
+      const formData = new FormData();
+      
+      // Verificar se é uma instituição ou um usuário
+      if (values.instituicao) {
+        formData.append("razaoSocial", values.nomeCompleto);
+      } else {
+        formData.append("nome", values.nomeCompleto);
+      }
+
+      formData.append("email", values.email);
+      formData.append("senha", values.senha);
+      formData.append("endereco", values.endereco);
+
+      // Verificar se uma imagem foi carregada
+      const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+      if (fileInput?.files?.[0]) {
+        formData.append("fotoPerfil", fileInput.files[0], fileInput.files[0].name); // Nome do arquivo original
+      }
+
+      console.log("formData:", formData.values);
+
+      // Fazer a requisição via axios usando FormData
+      const response = await axios.post(endpoint, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // const response = await axios.post(endpoint, payload);
       console.log(`${values.instituicao ? "Institution" : "User"} created successfully:`, response.data);
     } catch (error: any) {
       setFormError(error.response?.data?.message || `Erro ao criar ${values.instituicao ? "instituição" : "usuário"}`);

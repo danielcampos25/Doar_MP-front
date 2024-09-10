@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation"; // Import from next/navigation
 import Image from "next/image";
 import logo from "../../../public/Doar.com 1.svg";
 import pfp from "../../../public/pfp.svg";
@@ -10,22 +9,13 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import Link from "next/link";
-import { useEffect } from 'react';
 
 export default function Login() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isInstitution, setIsInstitution] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      router.push('/Feed');
-    }
-  }, [router]);
-  
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setProfileImage(URL.createObjectURL(e.target.files[0]));
@@ -48,30 +38,21 @@ export default function Login() {
   });
 
   const handleSubmit = async (values: any) => {
+    console.log(values);
     try {
       const response = await axios.post("http://localhost:3001/auth/login", {
         email: values.email,
         senha: values.senha,
-        userType: isInstitution ? "instituicao" : "user",
+        userType: values.userType,
       });
-      
-      const token = response.data.access_token;
-      console.log(response)
-      if (token) {
-        localStorage.setItem('token', token); // Salve o token no localStorage
-        alert("Login successful!");
-        
-        // Redirecionar para a página de Feed
-        router.push("/Feed");
-      } else {
-        alert("Token not received. Please try again.");
-      }
+      console.log(response.data);
+      alert("Login successful!");
     } catch (error) {
       console.error(error);
       alert("Login failed. Please check your credentials.");
     }
   };
-  
+
   return (
     <div className="h-screen flex">
       <div className="w-1/2 h-screen bg-gradient-to-r from-darkBlue to-lightBlue flex flex-col justify-center items-center">
@@ -94,11 +75,11 @@ export default function Login() {
           </div>
 
           <Formik
-            initialValues={{ email: "", senha: "" }}
+            initialValues={{ email: "", senha: "", userType: "user" }}
             validationSchema={loginSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting }) => (
+            {({ isSubmitting, setFieldValue }) => (
               <Form className="space-y-6 w-full flex flex-col items-center">
                 <div>
                   <h1 className="font-questrial text-white text-xl">E-mail</h1>
@@ -145,7 +126,7 @@ export default function Login() {
                     id="instituicao"
                     name="instituicao"
                     className="w-10 h-10 text-lightBlue bg-darkBlue focus:ring-white font-questrial mr-5"
-                    onChange={(e) => setIsInstitution(e.target.checked)}
+                    onChange={(e) => setFieldValue("userType", e.target.checked ? "instituicao" : "user")}
                   />
                   <label
                     htmlFor="instituicao"
@@ -183,4 +164,3 @@ export default function Login() {
     </div>
   );
 }
-
