@@ -120,10 +120,10 @@ export default function UserProfile() {
                     {donations.length > 0 ? (
                         donations.map((donation) => (
                             <DonationCardUser
-                                key={donation.id}
                                 donationTitle={donation.titulo}
-                                qrCodeUrl={`http://localhost:3001${donation.QRCode}`} // URL of the QR Code
+                                qrCodeUrl={`http://localhost:3001${donation.QRCode}`}
                                 onClick={() => openModal(donation)}
+                                entregue={donation.entregue} // Passa o valor do boolean "entregue" da doação
                             />
                         ))
                     ) : (

@@ -5,6 +5,7 @@ import Image from "next/image";
 export default function LocationModalUser({ donation, closeModal }: { donation: any, closeModal: () => void }) {
     const [trackingData, setTrackingData] = useState<any[]>([]); // Estado para armazenar os dados do rastreamento
     const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         const fetchTrackingData = async () => {
             try {
@@ -31,20 +32,25 @@ export default function LocationModalUser({ donation, closeModal }: { donation: 
     return (
         <div className="fixed inset-0 bg-softBlack bg-opacity-75 flex justify-center items-center">
             <div className="bg-lightBlue rounded-lg p-6 w-[600px] max-h-[600px] overflow-auto">
-                <h2 className="text-2xl mb-4">Rastreamento da Doação: {donation.title}</h2>
-                
-                {trackingData.length > 0 ? (
-                    trackingData.map((tracking) => (
-                        <div key={tracking.id} className="mb-4">
-                            <p><strong>Localização:</strong> {tracking.localizacao}</p>
-                            <p><strong>Status:</strong> {tracking.status}</p>
-                            <p><strong>Data:</strong> {new Date(tracking.createdAt).toLocaleString()}</p>
-                        </div>
-                    ))
+                {donation.entregue ? (
+                    <h1 className="text-2xl mb-4">Doação entregue</h1>
                 ) : (
-                    <p>Nenhum rastreamento disponível para esta doação.</p>
+                    <>
+                        <h2 className="text-2xl mb-4">Rastreamento da Doação: {donation.title}</h2>
+                        
+                        {trackingData.length > 0 ? (
+                            trackingData.map((tracking) => (
+                                <div key={tracking.id} className="mb-4">
+                                    <p><strong>Localização:</strong> {tracking.localizacao}</p>
+                                    <p><strong>Status:</strong> {tracking.status}</p>
+                                    <p><strong>Data:</strong> {new Date(tracking.createdAt).toLocaleString()}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>Nenhum rastreamento disponível para esta doação.</p>
+                        )}
+                    </>
                 )}
-
                 <button onClick={closeModal} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
                     Fechar
                 </button>

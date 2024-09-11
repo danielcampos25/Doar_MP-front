@@ -5,10 +5,12 @@ export default function DonationCardUser({
   donationTitle,
   qrCodeUrl,
   onClick,
+  entregue, // Nova prop para controlar o status da doação
 }: {
   donationTitle: string;
   qrCodeUrl: string;
   onClick: () => void;
+  entregue: boolean; // Tipo boolean para representar o status da doação
 }) {
   // Função de loader ajustada para evitar duplicação de caminho
   const myLoader = ({ src }: { src: string }) => {
@@ -38,10 +40,13 @@ export default function DonationCardUser({
       }
     }
   };
-  
 
   return (
-    <div className="w-4/5 h-40 flex items-center bg-darkBlue justify-around rounded-3xl mb-20 py-16">
+    <div
+      className={`w-4/5 h-40 flex items-center justify-around rounded-3xl mb-20 py-16 ${
+        entregue ? 'bg-green-500' : 'bg-darkBlue'
+      }`} // Muda a cor de fundo condicionalmente com base no status "entregue"
+    >
       <div className="relative h-[85px] w-[85px]">
         <Image
           ref={qrCodeRef as React.LegacyRef<HTMLImageElement>} // Corrige o tipo de ref para Next.js
