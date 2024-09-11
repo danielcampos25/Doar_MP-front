@@ -6,9 +6,10 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {
-    const [user, setUser] = useState<{ name: string; pfp: string }>({
+    const [user, setUser] = useState<{ name: string; pfp: string; role: string }>({
         name: '',
         pfp: '/pfp.svg', // default image
+        role: '', // to store the user role
     });
     const router = useRouter();
 
@@ -16,7 +17,7 @@ export default function Header() {
         if (src.startsWith('http') || src.startsWith('/')) {
             return src;
         }
-        return `http://localhost:3001/uploads/upload-user-photo/${encodedSrc}`;
+        return `http://localhost:3001/uploads/upload-user-photo/${src}`;
     };
 
     useEffect(() => {
@@ -40,7 +41,8 @@ export default function Header() {
                 const role = response.data.role;
 
                 let realUserData;
-                if (role === "user") {
+                if (role === 'user') {
+                    // Fetch user data
                     const response2 = await axios.get(`http://localhost:3001/users/${userId}`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -48,14 +50,28 @@ export default function Header() {
                     });
                     realUserData = response2.data;
 
-                    // Fix the file path to use only the relevant URL part
+                    // Clean the file path to use only the relevant URL part
                     const cleanedPhotoPath = realUserData.fotoPerfil.replace(/^.*[\\\/]/, '');
-                    console.log('cleanedPhotoPath', cleanedPhotoPath); // Log to see the cleaned path
-
-                    // Update the user state with the cleaned path
                     setUser({
                         name: realUserData.nome,
                         pfp: cleanedPhotoPath ? `http://localhost:3001/uploads/upload-user-photo/${cleanedPhotoPath}` : '/pfp.svg',
+                        role: 'user',
+                    });
+                } else {
+                    // Fetch institution data
+                    const response3 = await axios.get(`http://localhost:3001/instituicoes/${userId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    realUserData = response3.data;
+
+                    // Clean the file path for the institution's profile picture
+                    const cleanedPhotoPath = realUserData.fotoPerfil.replace(/^.*[\\\/]/, '');
+                    setUser({
+                        name: realUserData.razaoSocial,
+                        pfp: cleanedPhotoPath ? `http://localhost:3001/uploads/upload-institution-photo/${cleanedPhotoPath}` : '/pfp.svg',
+                        role: 'institution',
                     });
                 }
             } catch (error) {
@@ -75,14 +91,14 @@ export default function Header() {
                 <h1 className="font-questrial text-9xl text-white pl-10">doar.com</h1>
             </div>
             <div className="flex items-center hover:bg-opacity-10 bg-softBlack bg-opacity-0 p-4 rounded-lg">
-                <Link href="/User-Profile">
+                <Link href={user.role === 'institution' ? '/Institution-Profile' : '/User-Profile'}>
                     <h1 className="font-questrial text-4xl text-white pr-10 cursor-pointer">
                         {user.name || 'Loading...'}
                     </h1>
                 </Link>
-                <Link href="/User-Profile">
+                <Link href={user.role === 'institution' ? '/Institution-Profile' : '/User-Profile'}>
                     <Image
-                        loader={myLoader} // Use the custom loader
+                        loader={myLoader}
                         src={user.pfp}
                         alt="user pfp"
                         width={160}

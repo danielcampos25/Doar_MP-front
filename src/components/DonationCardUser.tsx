@@ -12,6 +12,7 @@ export default function DonationCardUser({
 }) {
   // Função de loader ajustada para evitar duplicação de caminho
   const myLoader = ({ src }: { src: string }) => {
+    console.log(src)
     // Verifica se o src já tem o caminho completo
     if (src.startsWith("http")) {
       return src; // Retorna o caminho completo se já estiver presente

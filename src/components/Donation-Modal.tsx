@@ -90,6 +90,7 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
                 },
             });
             console.log('Doação criada com sucesso:', response.data);
+            alert('Doação criada com sucesso! Você pode acessar seu qrcode em seu perfil.')
     
             // Limpar o formulário após o sucesso
             resetForm();

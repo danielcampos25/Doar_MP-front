@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 import { Formik, Field, Form, ErrorMessage } from "formik";
@@ -18,6 +18,7 @@ export default function Register() {
   const [formError, setFormError] = useState("");
   const [profileImage, setProfileImage] = useState("/profilepic.svg");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
@@ -39,23 +40,6 @@ export default function Register() {
         ? "http://localhost:3001/instituicoes" // Endpoint to create an institution
         : "http://localhost:3001/users"; // Endpoint to create a user
 
-      // const payload = values.instituicao
-      //   ? { // Payload for creating an institution
-      //       razaoSocial: values.nomeCompleto,
-      //       email: values.email,
-      //       senha: values.senha,
-      //       endereco: values.endereco,
-      //       fotoPerfil: profileImage,
-      //     }
-      //   : { // Payload for creating a user
-      //       nome: values.nomeCompleto,
-      //       email: values.email,
-      //       senha: values.senha,
-      //       endereco: values.endereco,
-      //       fotoPerfil: profileImage,
-      //     };
-
-      // Criando o FormData para enviar a imagem e os outros campos
       const formData = new FormData();
       
       // Verificar se é uma instituição ou um usuário
@@ -86,6 +70,8 @@ export default function Register() {
 
       // const response = await axios.post(endpoint, payload);
       console.log(`${values.instituicao ? "Institution" : "User"} created successfully:`, response.data);
+      alert(`${values.instituicao ? "Institution" : "User"} criado com sucesso! Você será redirecionado para o login agora.`)
+      router.push('/Login');
     } catch (error: any) {
       setFormError(error.response?.data?.message || `Erro ao criar ${values.instituicao ? "instituição" : "usuário"}`);
     } finally {

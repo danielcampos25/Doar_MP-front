@@ -36,7 +36,6 @@ export default function Feed() {
                     name: inst.razaoSocial,
                 }));
                 setFilteredInstitutions(institutions);
-                console.log(institutions)
             } catch (error) {
                 console.error("Error fetching institutions:", error);
                 if (error.response && error.response.status === 401) {

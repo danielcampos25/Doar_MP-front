@@ -1,17 +1,73 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Image from "next/image";
-import DeliveryTimeline from "./DeliveryTimeline";
 
 export default function LocationModalInstitution({
   closeModal,
   donation,
 }: {
   closeModal: () => void;
-  donation: {
-    title: string;
-    history: { address: string; date: string; time: string }[];
-    finalDestination: string;
-  };
+  donation: { id: number; title: string; finalDestination: string; createdAt: string }; // Include createdAt in the donation object
 }) {
+  const [trackingData, setTrackingData] = useState<
+    { id: number; localizacao: string; status: string; createdAt: string; updatedAt: string }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [isConfirming, setIsConfirming] = useState(false); // New state for handling confirmation
+
+  useEffect(() => {
+    const fetchTrackingData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://localhost:3001/tracking/donation/${donation.id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setTrackingData(response.data); // Store the tracking data in state
+      } catch (err) {
+        console.error("Error fetching tracking data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrackingData();
+  }, [donation.id]);
+
+  const handleConfirmReceipt = async () => {
+    try {
+      setIsConfirming(true); // Show loading state for the button
+      const token = localStorage.getItem("token");
+
+      // Make the POST request to update the donation status
+      await axios.patch(
+        `http://localhost:3001/donations/${donation.id}/entrega-concluida`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      alert("Recebimento confirmado com sucesso!");
+      closeModal(); // Optionally close the modal after confirming
+    } catch (err) {
+      console.error("Error confirming receipt:", err);
+      alert("Erro ao confirmar recebimento.");
+    } finally {
+      setIsConfirming(false); // Reset button state
+    }
+  };
+
+  if (loading) {
+    return <p>Carregando dados de rastreamento...</p>;
+  }
+
+  // Get the latest tracking information
+  const lastTracking = trackingData[trackingData.length - 1];
+
   return (
     <div>
       <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
@@ -25,38 +81,62 @@ export default function LocationModalInstitution({
           </button>
           <div className="py-14 px-44 flex flex-col items-center">
             <div className="flex flex-row items-center mb-10">
-              <Image
-                src={"/qrcode.svg"}
-                alt="QRcode"
-                height={240}
-                width={240}
-              />
               <div className="mx-20">
                 <h1 className="text-white font-questrial text-8xl mb-6">
                   {donation.title}
                 </h1>
+                {/* Use donation.createdAt for the "Enviada em" date */}
                 <h2 className="text-white font-questrial text-6xl">
-                  Enviada em {donation.history[0].date}
+                  Enviada em {new Date(donation.createdAt).toLocaleDateString()}
                 </h2>
               </div>
             </div>
-            <h3 className="text-white font-questrial text-5xl">
-              Último Escaneamento:{" "}
-              {donation.history[donation.history.length - 1].date} às{" "}
-              {donation.history[donation.history.length - 1].time}
-            </h3>
+            {lastTracking ? (
+              <h3 className="text-white font-questrial text-5xl">
+                Último Escaneamento: {new Date(lastTracking.updatedAt).toLocaleDateString()} às{" "}
+                {new Date(lastTracking.updatedAt).toLocaleTimeString()} em {lastTracking.localizacao}{" "}
+                (Status: {lastTracking.status})
+              </h3>
+            ) : (
+              <h3 className="text-white font-questrial text-5xl">
+                Nenhum rastreamento disponível
+              </h3>
+            )}
           </div>
           <div className="mx-20">
             <h3 className="text-white font-questrial text-5xl mb-5">
               Histórico de entrega
             </h3>
-            <div className="overflow-y-auto max-h-48 flex">
-              <DeliveryTimeline history={donation.history} />
-              <button className="font-questrial text-darkBlue bg-white border-4 border-darkBlue rounded-3xl text-4xl py-5 px-20 w-96 fixed bottom-40 right-1/4 transition-transform transform hover:scale-110 active:scale-95 cursor-pointer">
-                Confirmar Recebimento
-              </button>
+            <div className="overflow-y-auto max-h-48 flex flex-col">
+              {/* Loop through all tracking entries and display them */}
+              {trackingData.length > 0 ? (
+                trackingData.map((tracking) => (
+                  <div key={tracking.id} className="mb-4">
+                    <p className="text-white">
+                      <strong>Localização:</strong> {tracking.localizacao}
+                    </p>
+                    <p className="text-white">
+                      <strong>Status:</strong> {tracking.status}
+                    </p>
+                    <p className="text-white">
+                      <strong>Data:</strong> {new Date(tracking.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-white">Nenhum histórico de entrega.</p>
+              )}
             </div>
           </div>
+          <button
+            onClick={handleConfirmReceipt}
+            disabled={isConfirming} // Disable button while confirming
+            className={`font-questrial text-darkBlue bg-white border-4 border-darkBlue rounded-3xl text-4xl py-5 px-20 w-96 fixed bottom-40 right-1/4 transition-transform transform hover:scale-110 active:scale-95 cursor-pointer ${
+              isConfirming ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {isConfirming ? "Confirmando..." : "Confirmar Recebimento"}
+          </button>
         </div>
       </div>
     </div>
