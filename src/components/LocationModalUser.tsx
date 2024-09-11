@@ -5,7 +5,6 @@ import Image from "next/image";
 export default function LocationModalUser({ donation, closeModal }: { donation: any, closeModal: () => void }) {
     const [trackingData, setTrackingData] = useState<any[]>([]); // Estado para armazenar os dados do rastreamento
     const [loading, setLoading] = useState(true);
-
     useEffect(() => {
         const fetchTrackingData = async () => {
             try {
@@ -31,7 +30,7 @@ export default function LocationModalUser({ donation, closeModal }: { donation: 
 
     return (
         <div className="fixed inset-0 bg-softBlack bg-opacity-75 flex justify-center items-center">
-            <div className="bg-lightBlue rounded-lg p-6 w-[600px] max-h-[600px]">
+            <div className="bg-lightBlue rounded-lg p-6 w-[600px] max-h-[600px] overflow-auto">
                 <h2 className="text-2xl mb-4">Rastreamento da Doação: {donation.title}</h2>
                 
                 {trackingData.length > 0 ? (
@@ -40,15 +39,6 @@ export default function LocationModalUser({ donation, closeModal }: { donation: 
                             <p><strong>Localização:</strong> {tracking.localizacao}</p>
                             <p><strong>Status:</strong> {tracking.status}</p>
                             <p><strong>Data:</strong> {new Date(tracking.createdAt).toLocaleString()}</p>
-                            {tracking.fotoRastreamento && (
-                                <Image
-                                    src={`http://localhost:3001${tracking.fotoRastreamento}`}
-                                    alt="Foto do Rastreamento"
-                                    width={400}
-                                    height={300}
-                                    className="rounded"
-                                />
-                            )}
                         </div>
                     ))
                 ) : (
@@ -62,4 +52,3 @@ export default function LocationModalUser({ donation, closeModal }: { donation: 
         </div>
     );
 }
-

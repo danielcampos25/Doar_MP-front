@@ -25,22 +25,19 @@ export default function DonationCardUser({
   const handleDownload = () => {
     if (qrCodeRef.current) {
       const img = qrCodeRef.current;
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-
-      context?.drawImage(img, 0, 0);
-
-      const dataUrl = canvas.toDataURL("image/png");
-
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = "qrcode.png";
-      link.click();
+      const imgUrl = img.src;  // Get the URL of the QR code image
+  
+      // Open the image in a new tab or window
+      const newWindow = window.open();
+      if (newWindow) {
+        newWindow.document.write(`<img src="${imgUrl}" style="width:25%;height:auto;">`);
+        newWindow.document.close();
+        newWindow.focus();
+        newWindow.print();  // Automatically trigger the print dialog
+      }
     }
   };
+  
 
   return (
     <div className="w-4/5 h-40 flex items-center bg-darkBlue justify-around rounded-3xl mb-20 py-16">
