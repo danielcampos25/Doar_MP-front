@@ -1,61 +1,65 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Image from "next/image";
-import DeliveryTimeline from "./DeliveryTimeline";
 
-export default function LocationModalUser({
-  closeModal,
-  donation,
-}: {
-  closeModal: () => void;
-  donation: {
-    title: string;
-    history: { address: string; date: string; time: string }[];
-    finalDestination: string;
-  };
-}) {
-  return (
-    <div>
-      <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
-      <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="bg-lightBlue rounded-3xl border-8 border-white h-4/5 w-5/6">
-          <button
-            onClick={closeModal}
-            className="absolute top-15 right-44 p-2 rounded-full hover:bg-opacity-75"
-          >
-            <Image src={"/X.svg"} alt="close icon" width={96} height={96} />
-          </button>
-          <div className="py-14 px-44 flex flex-col items-center">
-            <div className="flex flex-row items-center mb-10">
-              <Image
-                src={"/qrcode.svg"}
-                alt="QRcode"
-                height={240}
-                width={240}
-              />
-              <div className="mx-20">
-                <h1 className="text-white font-questrial text-8xl mb-6">
-                  {donation.title}
-                </h1>
-                <h2 className="text-white font-questrial text-6xl">
-                  Enviada em {donation.history[0].date}
-                </h2>
-              </div>
+export default function LocationModalUser({ donation, closeModal }: { donation: any, closeModal: () => void }) {
+    const [trackingData, setTrackingData] = useState<any[]>([]); // Estado para armazenar os dados do rastreamento
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTrackingData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`http://localhost:3001/tracking/donation/${donation.id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                setTrackingData(response.data); // Armazena os dados do rastreamento no estado
+            } catch (err) {
+                console.error("Erro ao buscar os dados de rastreamento:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTrackingData();
+    }, [donation.id]);
+
+    if (loading) {
+        return <p>Carregando dados de rastreamento...</p>;
+    }
+
+    return (
+        <div className="fixed inset-0 bg-softBlack bg-opacity-75 flex justify-center items-center">
+            <div className="bg-lightBlue rounded-lg p-6 w-[600px] max-h-[600px]">
+                <h2 className="text-2xl mb-4">Rastreamento da Doação: {donation.title}</h2>
+                
+                {trackingData.length > 0 ? (
+                    trackingData.map((tracking) => (
+                        <div key={tracking.id} className="mb-4">
+                            <p><strong>Localização:</strong> {tracking.localizacao}</p>
+                            <p><strong>Status:</strong> {tracking.status}</p>
+                            <p><strong>Data:</strong> {new Date(tracking.createdAt).toLocaleString()}</p>
+                            {tracking.fotoRastreamento && (
+                                <Image
+                                    src={`http://localhost:3001${tracking.fotoRastreamento}`}
+                                    alt="Foto do Rastreamento"
+                                    width={400}
+                                    height={300}
+                                    className="rounded"
+                                />
+                            )}
+                        </div>
+                    ))
+                ) : (
+                    <p>Nenhum rastreamento disponível para esta doação.</p>
+                )}
+
+                <button onClick={closeModal} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
+                    Fechar
+                </button>
             </div>
-            <h3 className="text-white font-questrial text-5xl">
-              Último Escaneamento:{" "}
-              {donation.history[donation.history.length - 1].date} às{" "}
-              {donation.history[donation.history.length - 1].time}
-            </h3>
-          </div>
-          <div className="mx-20">
-            <h3 className="text-white font-questrial text-5xl mb-5">
-              Histórico de entrega
-            </h3>
-            <div className="overflow-y-auto max-h-48">
-              <DeliveryTimeline history={donation.history} />
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
+

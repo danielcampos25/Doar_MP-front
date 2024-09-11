@@ -76,6 +76,7 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
                 usuarioID,
                 destinatarioID: selectedId,
                 descricao: description,
+                titulo: title,
                 qtdItens: 0,
                 QRCode: 'aaaaaa', // Aqui você pode gerar o QRCode posteriormente
                 codigoRastreamento: 'aaaaaaaaaa', // Implementar lógica de rastreamento

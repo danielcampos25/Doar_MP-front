@@ -47,13 +47,13 @@ export default function Header() {
                     realUserData = response2.data
                     console.log(response2)
 
-                    const response3 = await axios.get(`http://localhost:3001/users/foto/${userId}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    userPhoto = response3.data
-                    console.log('response3', response3)
+                    //const response3 = await axios.get(`http://localhost:3001/users/foto/${userId}`, {
+                        //headers: {
+                            //Authorization: `Bearer ${token}`,
+                        //},
+                    //});
+                    //userPhoto = response3.data
+                    //console.log('response3', response3)
                 }
 
                 console.log(realUserData)
