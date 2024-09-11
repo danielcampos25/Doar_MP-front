@@ -26,6 +26,14 @@ export default function UserProfile() {
     const { id } = useParams(); // Captures the ID from the URL
     const router = useRouter();
 
+    const myLoader = ({ src }: { src: string }) => {
+        // If the src starts with 'http' or '/' assume it's an external or local path, otherwise construct the full URL
+        if (src.startsWith('http') || src.startsWith('/')) {
+            return src;
+        }
+        return `http://localhost:3001/uploads/upload-user-photo/${encodeURIComponent(src)}`;
+    };
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -46,9 +54,12 @@ export default function UserProfile() {
 
                 const realUserData = response2.data;
 
+                // Clean the photo path to ensure it's in the correct format
+                const cleanedPhotoPath = realUserData.fotoPerfil.replace(/^.*[\\\/]/, '');
+
                 setUser({
                     name: realUserData.nome,
-                    pfp: '/pfp.svg', // Add photo retrieval logic here when available
+                    pfp: cleanedPhotoPath ? `http://localhost:3001/uploads/upload-user-photo/${cleanedPhotoPath}` : '/pfp.svg',
                 });
 
                 // Fetch donations
@@ -93,6 +104,7 @@ export default function UserProfile() {
                 <div className="w-full h-96 bg-gradient-to-b from-lightBlue to-white flex items-center">
                     <div className="px-20">
                         <Image
+                            loader={myLoader} // Use custom loader
                             src={user.pfp}
                             alt="user pfp"
                             className="rounded-full"

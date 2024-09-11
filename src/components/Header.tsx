@@ -12,6 +12,13 @@ export default function Header() {
     });
     const router = useRouter();
 
+    const myLoader = ({ src }: { src: string }) => {
+        if (src.startsWith('http') || src.startsWith('/')) {
+            return src;
+        }
+        return `http://localhost:3001/uploads/upload-user-photo/${encodedSrc}`;
+    };
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -29,40 +36,28 @@ export default function Header() {
                     },
                 });
 
-                // Assuming the response contains the user object
-                const userData = response.data;
-                const userId = response.data.sub
-                const role = response.data.role
-                console.log(userData)
+                const userId = response.data.sub;
+                const role = response.data.role;
 
-                let realUserData
-                let userPhoto
-
+                let realUserData;
                 if (role === "user") {
                     const response2 = await axios.get(`http://localhost:3001/users/${userId}`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
                     });
-                    realUserData = response2.data
-                    console.log(response2)
+                    realUserData = response2.data;
 
-                    //const response3 = await axios.get(`http://localhost:3001/users/foto/${userId}`, {
-                        //headers: {
-                            //Authorization: `Bearer ${token}`,
-                        //},
-                    //});
-                    //userPhoto = response3.data
-                    //console.log('response3', response3)
+                    // Fix the file path to use only the relevant URL part
+                    const cleanedPhotoPath = realUserData.fotoPerfil.replace(/^.*[\\\/]/, '');
+                    console.log('cleanedPhotoPath', cleanedPhotoPath); // Log to see the cleaned path
+
+                    // Update the user state with the cleaned path
+                    setUser({
+                        name: realUserData.nome,
+                        pfp: cleanedPhotoPath ? `http://localhost:3001/uploads/upload-user-photo/${cleanedPhotoPath}` : '/pfp.svg',
+                    });
                 }
-
-                console.log(realUserData)
-
-                // Update state with the user data
-                setUser({
-                    name: realUserData.nome,
-                    pfp: '/pfp.svg', // Use default if no pfp is returned
-                });
             } catch (error) {
                 console.error('Failed to fetch user data:', error);
                 // Optionally redirect to login if the token is invalid
@@ -86,7 +81,14 @@ export default function Header() {
                     </h1>
                 </Link>
                 <Link href="/User-Profile">
-                    <Image src={user.pfp} alt="user pfp" width={112} height={112} className="cursor-pointer" />
+                    <Image
+                        loader={myLoader} // Use the custom loader
+                        src={user.pfp}
+                        alt="user pfp"
+                        width={160}
+                        height={160}
+                        className="cursor-pointer rounded-full"
+                    />
                 </Link>
             </div>
         </div>
