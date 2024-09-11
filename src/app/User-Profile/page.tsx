@@ -11,7 +11,7 @@ import LocationModalUser from '@/components/LocationModalUser';
 export default function UserProfile() {
     const [user, setUser] = useState<{ name: string; pfp: string }>({
         name: '',
-        pfp: '/pfp.svg', // Default image while loading
+        pfp: '/pfp.svg',
     });
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,11 +23,11 @@ export default function UserProfile() {
     }>(null);
     const [donations, setDonations] = useState([]);
 
-    const { id } = useParams(); // Captures the ID from the URL
+    const { id } = useParams();
     const router = useRouter();
 
     const myLoader = ({ src }: { src: string }) => {
-        // If the src starts with 'http' or '/' assume it's an external or local path, otherwise construct the full URL
+
         if (src.startsWith('http') || src.startsWith('/')) {
             return src;
         }
@@ -54,7 +54,6 @@ export default function UserProfile() {
 
                 const realUserData = response2.data;
 
-                // Clean the photo path to ensure it's in the correct format
                 const cleanedPhotoPath = realUserData.fotoPerfil.replace(/^.*[\\\/]/, '');
 
                 setUser({
@@ -62,12 +61,11 @@ export default function UserProfile() {
                     pfp: cleanedPhotoPath ? `http://localhost:3001/uploads/upload-user-photo/${cleanedPhotoPath}` : '/pfp.svg',
                 });
 
-                // Fetch donations
                 const donationResponse = await axios.get(`http://localhost:3001/donations/user/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                setDonations(donationResponse.data); // Set the donations fetched from the backend
+                setDonations(donationResponse.data);
             } catch (err) {
                 router.push('/Login');
             } finally {
@@ -104,7 +102,7 @@ export default function UserProfile() {
                 <div className="w-full h-96 bg-gradient-to-b from-lightBlue to-white flex items-center">
                     <div className="px-20">
                         <Image
-                            loader={myLoader} // Use custom loader
+                            loader={myLoader}
                             src={user.pfp}
                             alt="user pfp"
                             className="rounded-full"
@@ -123,7 +121,7 @@ export default function UserProfile() {
                                 donationTitle={donation.titulo}
                                 qrCodeUrl={`http://localhost:3001${donation.QRCode}`}
                                 onClick={() => openModal(donation)}
-                                entregue={donation.entregue} // Passa o valor do boolean "entregue" da doação
+                                entregue={donation.entregue}
                             />
                         ))
                     ) : (

@@ -1,26 +1,26 @@
 'use client';
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Importar useRouter da "next/navigation"
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function Rastreamento() {
   const [donation, setDonation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [doacaoID, setDoacaoID] = useState(null); // Estado para armazenar o doacaoID
+  const [doacaoID, setDoacaoID] = useState(null);
 
   const router = useRouter();
 
   useEffect(() => {
-    // Este código só será executado no cliente, onde o window está disponível
+
     const doacaoIDFromUrl = new URLSearchParams(window.location.search).get('doacaoID');
     setDoacaoID(doacaoIDFromUrl);
   }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!doacaoID) return; // Não faz a requisição se o ID não estiver presente
+    if (!doacaoID) return;
 
     const fetchDonationData = async () => {
       try {
@@ -29,7 +29,7 @@ export default function Rastreamento() {
             headers: {
               Authorization: `Bearer ${token}`,
           },
-        }); // Altere para o endpoint correto
+        });
         setDonation(response.data);
         console.log('response data', response.data);
       } catch (err) {
@@ -40,7 +40,7 @@ export default function Rastreamento() {
     };
 
     fetchDonationData();
-  }, [doacaoID]); // Faz a requisição quando o doacaoID for definido
+  }, [doacaoID]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -65,7 +65,7 @@ export default function Rastreamento() {
 
       console.log('Rastreamento enviado com sucesso:', response.data);
       alert("Rastreamento Enviado!")
-      // Faça algo após o sucesso, como redirecionar ou exibir uma mensagem
+
     } catch (err) {
       console.error('Erro ao enviar rastreamento:', err);
       setError(err);
@@ -123,7 +123,6 @@ export default function Rastreamento() {
               required
             />
           </div>
-          {/* Campo para envio de imagem */}
           <div className="flex justify-center w-full h-[15%] px-12 flex-col">
             <label className="text-white font-questrial text-3xl">
               Enviar Imagem

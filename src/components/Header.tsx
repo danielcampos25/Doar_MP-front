@@ -8,8 +8,8 @@ import { useRouter } from 'next/navigation';
 export default function Header() {
     const [user, setUser] = useState<{ name: string; pfp: string; role: string }>({
         name: '',
-        pfp: '/pfp.svg', // default image
-        role: '', // to store the user role
+        pfp: '/pfp.svg',
+        role: '',
     });
     const router = useRouter();
 
@@ -23,14 +23,12 @@ export default function Header() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                // Get token from localStorage
                 const token = localStorage.getItem('token');
                 if (!token) {
                     console.log('No token found');
                     return;
                 }
 
-                // Make request to the backend
                 const response = await axios.get('http://localhost:3001/auth/me', {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -42,7 +40,6 @@ export default function Header() {
 
                 let realUserData;
                 if (role === 'user') {
-                    // Fetch user data
                     const response2 = await axios.get(`http://localhost:3001/users/${userId}`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -50,7 +47,6 @@ export default function Header() {
                     });
                     realUserData = response2.data;
 
-                    // Clean the file path to use only the relevant URL part
                     const cleanedPhotoPath = realUserData.fotoPerfil.replace(/^.*[\\\/]/, '');
                     setUser({
                         name: realUserData.nome,
@@ -58,7 +54,6 @@ export default function Header() {
                         role: 'user',
                     });
                 } else {
-                    // Fetch institution data
                     const response3 = await axios.get(`http://localhost:3001/instituicoes/${userId}`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -66,7 +61,6 @@ export default function Header() {
                     });
                     realUserData = response3.data;
 
-                    // Clean the file path for the institution's profile picture
                     const cleanedPhotoPath = realUserData.fotoPerfil.replace(/^.*[\\\/]/, '');
                     setUser({
                         name: realUserData.razaoSocial,
@@ -76,7 +70,6 @@ export default function Header() {
                 }
             } catch (error) {
                 console.error('Failed to fetch user data:', error);
-                // Optionally redirect to login if the token is invalid
                 router.push('/Login');
             }
         };

@@ -12,29 +12,28 @@ interface Item {
 interface DonationModalProps {
     isOpen: boolean;
     institution: string;
-    selectedId: number; // Recebe o ID da instituição
+    selectedId: number;
     onClose: () => void;
 }
 
 export default function DonationModal({ isOpen, institution, selectedId, onClose }: DonationModalProps) {
     const [items, setItems] = useState<Item[]>([]);
     const [currentItem, setCurrentItem] = useState<string>('');
-    const [title, setTitle] = useState<string>(''); // Estado para armazenar o título
-    const [description, setDescription] = useState<string>(''); // Estado para armazenar a descrição
-    const [error, setError] = useState<string>(''); // Estado para armazenar a mensagem de erro
+    const [title, setTitle] = useState<string>('');
+    const [description, setDescription] = useState<string>('');
+    const [error, setError] = useState<string>('');
 
-    // Função para resetar o formulário quando o modal for fechado
     const resetForm = () => {
         setTitle('');
         setDescription('');
         setItems([]);
         setCurrentItem('');
-        setError(''); // Limpar a mensagem de erro
+        setError('');
     };
 
     const handleModalClose = () => {
-        resetForm();  // Reseta o formulário ao fechar o modal
-        onClose();    // Fecha o modal
+        resetForm();
+        onClose();
     };
 
     if (!isOpen) return null;
@@ -55,7 +54,6 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
         }
     
         try {
-            // Obter o ID do usuário autenticado
             const userResponse = await axios.get('http://localhost:3001/auth/me', {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -78,12 +76,11 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
                 descricao: description,
                 titulo: title,
                 qtdItens: 0,
-                QRCode: 'aaaaaa', // Aqui você pode gerar o QRCode posteriormente
-                codigoRastreamento: 'aaaaaaaaaa', // Implementar lógica de rastreamento
+                QRCode: 'aaaaaa',
+                codigoRastreamento: 'aaaaaaaaaa',
                 entregue: false,
             };
-    
-            // Enviar os dados para o backend
+
             const response = await axios.post('http://localhost:3001/donations', donationData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -92,9 +89,8 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
             console.log('Doação criada com sucesso:', response.data);
             alert('Doação criada com sucesso! Você pode acessar seu qrcode em seu perfil.')
     
-            // Limpar o formulário após o sucesso
             resetForm();
-            // Exibir QR code em um toast ou realizar outra ação aqui
+
         } catch (error) {
             console.error('Erro ao criar doação:', error);
             setError('Ocorreu um erro ao criar a doação. Tente novamente.');
@@ -108,9 +104,8 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
             <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
                 <div className="relative bg-lightBlue w-3/4 max-h-[764px] border-4 border-white rounded-2xl flex flex-col p-8 z-50 items-center overflow-y-auto">
                     
-                    {/* Botão de Fechar */}
                     <button
-                        onClick={handleModalClose} // Chama a função que reseta o formulário e fecha o modal
+                        onClick={handleModalClose}
                         className="absolute top-4 right-4 p-2 rounded-full hover:bg-opacity-75"
                     >
                         <Image src={X} alt="close icon" width={96} height={96} />
@@ -119,8 +114,6 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
                     <h1 className="font-questrial text-7xl text-white mb-8 text-center">
                         Doando para: {institution}
                     </h1>
-
-                    {/* Título da Doação */}
                     <div className="flex flex-col items-center w-full mb-8">
                         <label
                             htmlFor="donation-title"
@@ -136,8 +129,6 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
                             placeholder="Digite o título da doação"
                         />
                     </div>
-
-                    {/* Campo de Descrição */}
                     <div className="flex flex-col items-center w-full mb-8">
                         <label
                             htmlFor="donation-description"
@@ -151,23 +142,19 @@ export default function DonationModal({ isOpen, institution, selectedId, onClose
                             onChange={(e) => setDescription(e.target.value)}
                             className="w-3/4 text-darkBlue text-2xl p-4 rounded-2xl border-4 border-darkBlue outline-none resize-none"
                             placeholder="Descreva os itens a serem doados. Você não poderá alterar isso futuramente."
-                            rows={1} // Set initial height
+                            rows={1}
                             onInput={(e) => {
                                 const target = e.target as HTMLTextAreaElement;
-                                target.style.height = 'auto'; // Reset height
-                                target.style.height = `${target.scrollHeight}px`; // Adjust height based on content
+                                target.style.height = 'auto';
+                                target.style.height = `${target.scrollHeight}px`;
                             }}
                         />
                     </div>
-
-                    {/* Exibir mensagem de erro, se houver */}
                     {error && (
                         <div className="text-red-500 text-2xl mb-4">
                             {error}
                         </div>
                     )}
-
-                    {/* Botão Enviar */}
                     <button
                         onClick={handleSubmit}
                         className="mt-4 bg-white text-darkBlue font-questrial text-4xl px-8 py-4 rounded-full border-darkBlue border-4"

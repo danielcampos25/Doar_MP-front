@@ -11,7 +11,7 @@ import LocationModalInstitution from '@/components/LocationModalInstitution';
 export default function InstitutionProfile() {
     const [institution, setInstitution] = useState<{ name: string; pfp: string }>({
         name: '',
-        pfp: '/pfp.svg', // Default image while loading
+        pfp: '/pfp.svg',
     });
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,7 +26,7 @@ export default function InstitutionProfile() {
     const router = useRouter();
 
     const myLoader = ({ src }: { src: string }) => {
-        // If the src starts with 'http' or '/' assume it's an external or local path, otherwise construct the full URL
+
         if (src.startsWith('http') || src.startsWith('/')) {
             return src;
         }
@@ -53,7 +53,6 @@ export default function InstitutionProfile() {
 
                 const institutionData = institutionResponse.data;
 
-                // Clean the photo path to ensure it's in the correct format
                 const cleanedPhotoPath = institutionData.fotoPerfil.replace(/^.*[\\\/]/, '');
 
                 setInstitution({
@@ -61,15 +60,13 @@ export default function InstitutionProfile() {
                     pfp: cleanedPhotoPath ? `http://localhost:3001/uploads/upload-institution-photo/${cleanedPhotoPath}` : '/pfp.svg',
                 });
 
-                // Fetch donations related to the institution
                 const donationResponse = await axios.get(`http://localhost:3001/instituicoes/${institutionId}/doacoes`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                // Filter donations where entregue is false
                 const pendingDonations = donationResponse.data.filter((donation: any) => !donation.entregue);
 
-                setDonations(pendingDonations); // Set only pending donations
+                setDonations(pendingDonations);
             } catch (err) {
                 router.push('/Login');
             } finally {
@@ -106,7 +103,7 @@ export default function InstitutionProfile() {
                 <div className="w-full h-96 bg-gradient-to-b from-lightBlue to-white flex items-center">
                     <div className="px-20">
                         <Image
-                            loader={myLoader} // Use custom loader
+                            loader={myLoader}
                             src={institution.pfp}
                             alt="institution pfp"
                             className="rounded-full"

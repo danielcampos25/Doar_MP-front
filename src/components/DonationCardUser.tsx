@@ -5,21 +5,18 @@ export default function DonationCardUser({
   donationTitle,
   qrCodeUrl,
   onClick,
-  entregue, // Nova prop para controlar o status da doação
+  entregue,
 }: {
   donationTitle: string;
   qrCodeUrl: string;
   onClick: () => void;
-  entregue: boolean; // Tipo boolean para representar o status da doação
+  entregue: boolean;
 }) {
-  // Função de loader ajustada para evitar duplicação de caminho
   const myLoader = ({ src }: { src: string }) => {
     console.log(src)
-    // Verifica se o src já tem o caminho completo
     if (src.startsWith("http")) {
-      return src; // Retorna o caminho completo se já estiver presente
+      return src;
     }
-    // Caso contrário, concatena o caminho base
     return `http://localhost:3001/uploads/upload-qrcode/${src}`;
   };
 
@@ -28,15 +25,14 @@ export default function DonationCardUser({
   const handleDownload = () => {
     if (qrCodeRef.current) {
       const img = qrCodeRef.current;
-      const imgUrl = img.src;  // Get the URL of the QR code image
+      const imgUrl = img.src;
   
-      // Open the image in a new tab or window
       const newWindow = window.open();
       if (newWindow) {
         newWindow.document.write(`<img src="${imgUrl}" style="width:25%;height:auto;">`);
         newWindow.document.close();
         newWindow.focus();
-        newWindow.print();  // Automatically trigger the print dialog
+        newWindow.print();
       }
     }
   };
@@ -45,16 +41,16 @@ export default function DonationCardUser({
     <div
       className={`w-4/5 h-40 flex items-center justify-around rounded-3xl mb-20 py-16 ${
         entregue ? 'bg-green-500' : 'bg-darkBlue'
-      }`} // Muda a cor de fundo condicionalmente com base no status "entregue"
+      }`}
     >
       <div className="relative h-[85px] w-[85px]">
         <Image
-          ref={qrCodeRef as React.LegacyRef<HTMLImageElement>} // Corrige o tipo de ref para Next.js
-          loader={myLoader}  // Passa a função de loader
-          src={qrCodeUrl}  // Certifique-se de que o src é apenas o nome do arquivo ou o caminho relativo
+          ref={qrCodeRef as React.LegacyRef<HTMLImageElement>}
+          loader={myLoader}
+          src={qrCodeUrl}
           alt="QR Code"
-          fill  // Preenche a div pai, garantindo o layout responsivo
-          style={{ objectFit: "contain" }}  // Garante que a imagem do QR Code mantenha a proporção
+          fill
+          style={{ objectFit: "contain" }}
         />
       </div>
       <button

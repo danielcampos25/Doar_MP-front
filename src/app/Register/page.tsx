@@ -37,12 +37,11 @@ export default function Register() {
     console.log(values);
     try {
       const endpoint = values.instituicao
-        ? "http://localhost:3001/instituicoes" // Endpoint to create an institution
-        : "http://localhost:3001/users"; // Endpoint to create a user
+        ? "http://localhost:3001/instituicoes"
+        : "http://localhost:3001/users";
 
       const formData = new FormData();
       
-      // Verificar se é uma instituição ou um usuário
       if (values.instituicao) {
         formData.append("razaoSocial", values.nomeCompleto);
       } else {
@@ -53,22 +52,19 @@ export default function Register() {
       formData.append("senha", values.senha);
       formData.append("endereco", values.endereco);
 
-      // Verificar se uma imagem foi carregada
       const fileInput = document.getElementById("file-upload") as HTMLInputElement;
       if (fileInput?.files?.[0]) {
-        formData.append("fotoPerfil", fileInput.files[0], fileInput.files[0].name); // Nome do arquivo original
+        formData.append("fotoPerfil", fileInput.files[0], fileInput.files[0].name);
       }
 
       console.log("formData:", formData.values);
 
-      // Fazer a requisição via axios usando FormData
       const response = await axios.post(endpoint, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      // const response = await axios.post(endpoint, payload);
+      
       console.log(`${values.instituicao ? "Institution" : "User"} created successfully:`, response.data);
       alert(`${values.instituicao ? "Institution" : "User"} criado com sucesso! Você será redirecionado para o login agora.`)
       router.push('/Login');

@@ -3,7 +3,7 @@ import axios from "axios";
 import Image from "next/image";
 
 export default function LocationModalUser({ donation, closeModal }: { donation: any, closeModal: () => void }) {
-    const [trackingData, setTrackingData] = useState<any[]>([]); // Estado para armazenar os dados do rastreamento
+    const [trackingData, setTrackingData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,7 +14,7 @@ export default function LocationModalUser({ donation, closeModal }: { donation: 
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                setTrackingData(response.data); // Armazena os dados do rastreamento no estado
+                setTrackingData(response.data);
             } catch (err) {
                 console.error("Erro ao buscar os dados de rastreamento:", err);
             } finally {

@@ -48,10 +48,8 @@ export default function Login() {
         userType: values.userType,
       });
   
-      // Supondo que o token esteja na resposta em 'response.data.token'
       const token = response.data.access_token;
       
-      // Salve o token no localStorage
       localStorage.setItem("token", token);
       console.log(response.data);
       alert("Login successful!");

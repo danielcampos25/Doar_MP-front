@@ -7,13 +7,13 @@ export default function LocationModalInstitution({
   donation,
 }: {
   closeModal: () => void;
-  donation: { id: number; title: string; finalDestination: string; createdAt: string }; // Include createdAt in the donation object
+  donation: { id: number; title: string; finalDestination: string; createdAt: string };
 }) {
   const [trackingData, setTrackingData] = useState<
     { id: number; localizacao: string; status: string; createdAt: string; updatedAt: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
-  const [isConfirming, setIsConfirming] = useState(false); // New state for handling confirmation
+  const [isConfirming, setIsConfirming] = useState(false);
 
   useEffect(() => {
     const fetchTrackingData = async () => {
@@ -26,7 +26,7 @@ export default function LocationModalInstitution({
           }
         );
 
-        setTrackingData(response.data); // Store the tracking data in state
+        setTrackingData(response.data);
       } catch (err) {
         console.error("Error fetching tracking data:", err);
       } finally {
@@ -39,10 +39,8 @@ export default function LocationModalInstitution({
 
   const handleConfirmReceipt = async () => {
     try {
-      setIsConfirming(true); // Show loading state for the button
+      setIsConfirming(true);
       const token = localStorage.getItem("token");
-
-      // Make the POST request to update the donation status
       await axios.patch(
         `http://localhost:3001/donations/${donation.id}/entrega-concluida`,
         {},
@@ -52,20 +50,18 @@ export default function LocationModalInstitution({
       );
 
       alert("Recebimento confirmado com sucesso!");
-      closeModal(); // Optionally close the modal after confirming
+      closeModal();
     } catch (err) {
       console.error("Error confirming receipt:", err);
       alert("Erro ao confirmar recebimento.");
     } finally {
-      setIsConfirming(false); // Reset button state
+      setIsConfirming(false);
     }
   };
 
   if (loading) {
     return <p>Carregando dados de rastreamento...</p>;
   }
-
-  // Get the latest tracking information
   const lastTracking = trackingData[trackingData.length - 1];
 
   return (
@@ -85,7 +81,6 @@ export default function LocationModalInstitution({
                 <h1 className="text-white font-questrial text-8xl mb-6">
                   {donation.title}
                 </h1>
-                {/* Use donation.createdAt for the "Enviada em" date */}
                 <h2 className="text-white font-questrial text-6xl">
                   Enviada em {new Date(donation.createdAt).toLocaleDateString()}
                 </h2>
@@ -108,7 +103,6 @@ export default function LocationModalInstitution({
               Histórico de entrega
             </h3>
             <div className="overflow-y-auto max-h-48 flex flex-col">
-              {/* Loop through all tracking entries and display them */}
               {trackingData.length > 0 ? (
                 trackingData.map((tracking) => (
                   <div key={tracking.id} className="mb-4">
@@ -130,7 +124,7 @@ export default function LocationModalInstitution({
           </div>
           <button
             onClick={handleConfirmReceipt}
-            disabled={isConfirming} // Disable button while confirming
+            disabled={isConfirming}
             className={`font-questrial text-darkBlue bg-white border-4 border-darkBlue rounded-3xl text-4xl py-5 px-20 w-96 fixed bottom-40 right-1/4 transition-transform transform hover:scale-110 active:scale-95 cursor-pointer ${
               isConfirming ? "opacity-50 cursor-not-allowed" : ""
             }`}
