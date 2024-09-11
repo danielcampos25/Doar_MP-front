@@ -1,12 +1,24 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+
+const RegisterSchema = Yup.object().shape({
+  nomeCompleto: Yup.string().required("Nome Completo é obrigatório"),
+  endereco: Yup.string().required("Endereço é obrigatório"),
+  email: Yup.string().email("E-mail inválido").required("E-mail é obrigatório"),
+  senha: Yup.string().min(6, "A senha deve ter no mínimo 6 caracteres").required("Senha é obrigatória"),
+  instituicao: Yup.boolean(),
+});
 
 export default function Register() {
+  const [formError, setFormError] = useState("");
   const [profileImage, setProfileImage] = useState("/profilepic.svg");
-
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
@@ -20,21 +32,69 @@ export default function Register() {
     }
   };
 
+  const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    setFormError("");
+    console.log(values);
+    try {
+      const endpoint = values.instituicao
+        ? "http://localhost:3001/instituicoes" // Endpoint to create an institution
+        : "http://localhost:3001/users"; // Endpoint to create a user
+
+      const formData = new FormData();
+      
+      // Verificar se é uma instituição ou um usuário
+      if (values.instituicao) {
+        formData.append("razaoSocial", values.nomeCompleto);
+      } else {
+        formData.append("nome", values.nomeCompleto);
+      }
+
+      formData.append("email", values.email);
+      formData.append("senha", values.senha);
+      formData.append("endereco", values.endereco);
+
+      // Verificar se uma imagem foi carregada
+      const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+      if (fileInput?.files?.[0]) {
+        formData.append("fotoPerfil", fileInput.files[0], fileInput.files[0].name); // Nome do arquivo original
+      }
+
+      console.log("formData:", formData.values);
+
+      // Fazer a requisição via axios usando FormData
+      const response = await axios.post(endpoint, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // const response = await axios.post(endpoint, payload);
+      console.log(`${values.instituicao ? "Institution" : "User"} created successfully:`, response.data);
+      alert(`${values.instituicao ? "Institution" : "User"} criado com sucesso! Você será redirecionado para o login agora.`)
+      router.push('/Login');
+    } catch (error: any) {
+      setFormError(error.response?.data?.message || `Erro ao criar ${values.instituicao ? "instituição" : "usuário"}`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-gradient-to-r from-lightBlue to-darkBlue h-screen w-screen flex">
       <div className="h-screen w-1/2 bg-white flex items-center flex-col">
-        <h1 className="text-lightBlue font-questrial text-8xl pt-7">
-          Cadastro
-        </h1>
+        <h1 className="text-lightBlue font-questrial text-8xl pt-7">Cadastro</h1>
         <div className="bg-lightBlue h-4/5 w-4/6 mt-5 rounded-2xl flex items-center flex-col overflow-hidden">
           <div className="relative w-32 h-32 mt-5 rounded-full overflow-hidden">
-            <label htmlFor="file-upload" className="cursor-pointer">
+            <label
+              htmlFor="file-upload"
+              className="rounded-full top-2 right-2 cursor-pointer"
+            >
               <Image
                 src={profileImage}
-                alt="Profile picture"
-                layout="fill"
+                alt="Profile Image"
                 objectFit="cover"
-                className="rounded-full"
+                height={140}
+                width={140}
               />
             </label>
           </div>
@@ -45,99 +105,141 @@ export default function Register() {
             onChange={handleImageUpload}
             className="hidden"
           />
-          <form action="/submit" method="POST" className="space-y-6 w-full">
-            <div className="flex justify-start w-full h-[15%] px-12 flex-col">
-              <label className="text-white font-questrial text-2xl">
-                Nome Completo
-              </label>
-              <input
-                className="w-full h-12 rounded-full px-4 text-xl mt-3 font-questrial text-darkBlue outline-darkBlue"
-                type="text"
-                name="nomeCompleto"
-                required
-              />
-            </div>
-            <div className="flex justify-center w-full h-[15%] px-12 flex-col">
-              <label className="text-white font-questrial text-2xl">
-                Endereço
-              </label>
-              <input
-                className="w-full h-12 rounded-full px-4 text-xl mt-3 font-questrial text-darkBlue outline-darkBlue"
-                type="text"
-                name="endereco"
-                required
-              />
-            </div>
-            <div className="flex justify-center w-full h-[15%] px-12 flex-col">
-              <label className="text-white font-questrial text-2xl">
-                E-mail
-              </label>
-              <input
-                className="w-full h-12 rounded-full px-4 text-xl mt-3 font-questrial text-darkBlue outline-darkBlue"
-                type="email"
-                name="email"
-                required
-              />
-            </div>
-            <div className="relative flex justify-center w-full h-[15%] px-12 flex-col">
-              <label className="text-white font-questrial text-2xl">
-                Senha
-              </label>
-              <div className="relative w-full mt-3">
-                <input
-                  className="w-full h-12 rounded-full px-4 text-xl font-questrial text-darkBlue outline-darkBlue"
-                  type={passwordVisible ? "text" : "password"}
-                  name="senha"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-darkBlue text-xl"
-                >
-                  {passwordVisible ? (
-                    <Image
-                      src="/hide.png"
-                      alt="Hide password"
-                      width={24}
-                      height={24}
+
+          <Formik
+            initialValues={{
+              nomeCompleto: "",
+              endereco: "",
+              email: "",
+              senha: "",
+              instituicao: false,
+            }}
+            validationSchema={RegisterSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ isSubmitting }) => (
+              <Form className="space-y-6 w-full">
+                {formError && (
+                  <div className="text-red-500 text-center">{formError}</div>
+                )}
+
+                <div className="flex justify-start w-full h-[15%] px-12 flex-col">
+                  <label className="text-white font-questrial text-2xl">
+                    Nome Completo
+                  </label>
+                  <Field
+                    className="w-full h-12 rounded-full px-4 text-xl mt-3 font-questrial text-darkBlue outline-darkBlue"
+                    type="text"
+                    name="nomeCompleto"
+                  />
+                  <ErrorMessage
+                    name="nomeCompleto"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+
+                <div className="flex justify-center w-full h-[15%] px-12 flex-col">
+                  <label className="text-white font-questrial text-2xl">
+                    Endereço
+                  </label>
+                  <Field
+                    className="w-full h-12 rounded-full px-4 text-xl mt-3 font-questrial text-darkBlue outline-darkBlue"
+                    type="text"
+                    name="endereco"
+                  />
+                  <ErrorMessage
+                    name="endereco"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+
+                <div className="flex justify-center w-full h-[15%] px-12 flex-col">
+                  <label className="text-white font-questrial text-2xl">
+                    E-mail
+                  </label>
+                  <Field
+                    className="w-full h-12 rounded-full px-4 text-xl mt-3 font-questrial text-darkBlue outline-darkBlue"
+                    type="email"
+                    name="email"
+                  />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+
+                <div className="relative flex justify-center w-full h-[15%] px-12 flex-col">
+                  <label className="text-white font-questrial text-2xl">
+                    Senha
+                  </label>
+                  <div className="relative w-full mt-3">
+                    <Field
+                      className="w-full h-12 rounded-full px-4 text-xl font-questrial text-darkBlue outline-darkBlue"
+                      type={passwordVisible ? "text" : "password"}
+                      name="senha"
                     />
-                  ) : (
-                    <Image
-                      src="/show.png"
-                      alt="Show password"
-                      width={24}
-                      height={24}
-                    />
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="flex justify-center mt-10">
-              <label
-                htmlFor="item1"
-                className="mr-4 text-white font-questrial text-[1.65rem]"
-              >
-                Sou uma instituição
-              </label>
-              <input
-                type="checkbox"
-                id="item1"
-                name="instituicao"
-                className="w-10 h-10 text-lightBlue bg-darkBlue rounded focus:ring-white font-questrial"
-              />
-            </div>
-            <div className="flex justify-center mt-8">
-              <button
-                type="submit"
-                className="bg-white hover:bg-darkBlue text-lightBlue font-questrial py-2 px-6 rounded-full text-xl"
-              >
-                Cadastrar
-              </button>
-            </div>
-          </form>
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-darkBlue text-xl"
+                    >
+                      {passwordVisible ? (
+                        <Image
+                          src="/hide.png"
+                          alt="Hide password"
+                          width={24}
+                          height={24}
+                        />
+                      ) : (
+                        <Image
+                          src="/show.png"
+                          alt="Show password"
+                          width={24}
+                          height={24}
+                        />
+                      )}
+                    </button>
+                  </div>
+                  <ErrorMessage
+                    name="senha"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+
+                <div className="flex justify-center mt-10">
+                  <label
+                    htmlFor="instituicao"
+                    className="mr-4 text-white font-questrial text-[1.65rem]"
+                  >
+                    Sou uma instituição
+                  </label>
+                  <Field
+                    type="checkbox"
+                    id="instituicao"
+                    name="instituicao"
+                    className="w-10 h-10 text-lightBlue bg-darkBlue rounded focus:ring-white font-questrial"
+                  />
+                </div>
+
+                <div className="flex justify-center mt-8">
+                  <button
+                    type="submit"
+                    className="bg-white hover:bg-darkBlue text-lightBlue font-questrial py-2 px-6 rounded-full text-xl"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Enviando..." : "Enviar"}
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
+
       <div>
         <Image
           src={"/Doar.com 1.svg"}
