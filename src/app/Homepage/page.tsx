@@ -1,18 +1,31 @@
-"use client"; 
+"use client";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+/**
+ * Componente da página inicial do site.
+ *
+ * @component
+ */
 export default function Homepage() {
   const router = useRouter();
 
+  /**
+   * Função para redirecionar o usuário à página de login.
+   *
+   * @returns {void}
+   *
+   * @pre O usuário precisa clicar no botão "Entrar".
+   * @post O usuário será redirecionado para a rota "/Login".
+   */
   const handleReturnClick = () => {
     router.push("/Login");
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-r from-lightBlue to-darkBlue">
-
+      {/* Header da página */}
       <header className="fixed top-0 w-full h-[204px] bg-softBlack bg-opacity-25 flex items-center z-50">
         <div className="ml-40">
           <Image
@@ -24,14 +37,16 @@ export default function Homepage() {
         </div>
         <h1 className="font-questrial text-7xl ml-10">do ar.com</h1>
         <div className="ml-auto mr-40">
-          <button 
+          <button
             onClick={handleReturnClick}
-            className="font-questrial text-2xl w-[170px] h-[77px] border-4 border-white rounded-full text-white">
+            className="font-questrial text-2xl w-[170px] h-[77px] border-4 border-white rounded-full text-white"
+          >
             Entrar
           </button>
         </div>
       </header>
 
+      {/* Conteúdo principal */}
       <main className="mt-[204px] mb-20 flex-grow flex items-center justify-between px-40">
         <div className="text-white font-questrial text-7xl max-w-[650px] max-h-[592px]">
           <p>Doar nunca foi tão fácil e seguro.</p>
@@ -55,6 +70,7 @@ export default function Homepage() {
         </div>
       </main>
 
+      {/* Seção de estatísticas */}
       <section className="py-20 bg-gradient-to-r from-lightBlue to-darkBlue">
         <div className="text-left ml-40 mt-20 text-white font-questrial text-4xl mb-8">
           <p>Acompanhe nossas estatísticas!</p>
@@ -81,6 +97,7 @@ export default function Homepage() {
         </div>
       </section>
 
+      {/* Footer da página */}
       <footer className="fixed bottom-0 w-full h-[102px] bg-softGray bg-opacity-50 flex items-center z-50">
         <h2 className="font-questrial text-2xl ml-36 text-softBlack">
           do_ar2024@gmail.com

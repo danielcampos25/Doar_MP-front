@@ -1,10 +1,17 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-interface ReturnButtonProps {
-  onClick: () => void;
-}
-
+/**
+ * Componente de botão para retornar à página anterior.
+ *
+ * Exibe um ícone de seta para retornar à página anterior e chama uma função de retorno
+ * quando o ícone é clicado.
+ *
+ * @component
+ * @param {Object} props - Propriedades do componente.
+ * @param {Function} props.onClick - Função a ser chamada quando o botão é clicado.
+ * @returns {JSX.Element} - Retorna o JSX do botão de retorno.
+ */
 export default function ReturnButton({ onClick }: ReturnButtonProps) {
   return (
     <Image
@@ -16,4 +23,14 @@ export default function ReturnButton({ onClick }: ReturnButtonProps) {
       onClick={onClick}
     />
   );
+}
+
+/**
+ * Tipagem das propriedades do componente ReturnButton.
+ *
+ * @typedef {Object} ReturnButtonProps
+ * @property {Function} onClick - Função a ser chamada quando o botão é clicado.
+ */
+interface ReturnButtonProps {
+  onClick: () => void;
 }

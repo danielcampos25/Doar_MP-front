@@ -1,20 +1,58 @@
+// EU10: "Eu como instituição quero confirmar a entrega de uma doação"
+// EU13: "Eu como instituição quero visualizar as doações enviadas para mim"
+// EU14: "Eu como instituição quero acompanhar as minhas doações"
+// EU15: "Eu como instituição quero visualizar e imprimir um o qrcode das minhas doações"
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 
+/**
+ * Componente de modal para exibir informações de rastreamento de uma doação.
+ *
+ * Exibe os detalhes da doação, o último escaneamento e o histórico de rastreamento.
+ * Permite confirmar o recebimento da doação.
+ *
+ * @component
+ * @param {Object} props - Propriedades do componente.
+ * @param {Function} props.closeModal - Função para fechar o modal.
+ * @param {Object} props.donation - Dados da doação.
+ * @param {number} props.donation.id - ID da doação.
+ * @param {string} props.donation.title - Título da doação.
+ * @param {string} props.donation.finalDestination - Destino final da doação.
+ * @param {string} props.donation.createdAt - Data de criação da doação.
+ * @returns {JSX.Element} - Retorna o JSX do modal de rastreamento.
+ */
 export default function LocationModalInstitution({
   closeModal,
   donation,
 }: {
   closeModal: () => void;
-  donation: { id: number; title: string; finalDestination: string; createdAt: string };
+  donation: {
+    id: number;
+    title: string;
+    finalDestination: string;
+    createdAt: string;
+  };
 }) {
   const [trackingData, setTrackingData] = useState<
-    { id: number; localizacao: string; status: string; createdAt: string; updatedAt: string }[]
+    {
+      id: number;
+      localizacao: string;
+      status: string;
+      createdAt: string;
+      updatedAt: string;
+    }[]
   >([]);
   const [loading, setLoading] = useState(true);
   const [isConfirming, setIsConfirming] = useState(false);
 
+  /**
+   * Efeito colateral que busca os dados de rastreamento da doação quando o componente é montado.
+   *
+   * Obtém o token do armazenamento local e faz uma solicitação para obter os dados de rastreamento.
+   * Atualiza o estado com os dados de rastreamento ou lida com erros.
+   */
   useEffect(() => {
     const fetchTrackingData = async () => {
       try {
@@ -37,6 +75,12 @@ export default function LocationModalInstitution({
     fetchTrackingData();
   }, [donation.id]);
 
+  /**
+   * Função para confirmar o recebimento da doação.
+   *
+   * Faz uma solicitação PATCH para atualizar o status da doação para "entrega concluída".
+   * Exibe uma mensagem de sucesso ou erro conforme o resultado da solicitação.
+   */
   const handleConfirmReceipt = async () => {
     try {
       setIsConfirming(true);
@@ -62,6 +106,7 @@ export default function LocationModalInstitution({
   if (loading) {
     return <p>Carregando dados de rastreamento...</p>;
   }
+
   const lastTracking = trackingData[trackingData.length - 1];
 
   return (
@@ -88,9 +133,10 @@ export default function LocationModalInstitution({
             </div>
             {lastTracking ? (
               <h3 className="text-white font-questrial text-5xl">
-                Último Escaneamento: {new Date(lastTracking.updatedAt).toLocaleDateString()} às{" "}
-                {new Date(lastTracking.updatedAt).toLocaleTimeString()} em {lastTracking.localizacao}{" "}
-                (Status: {lastTracking.status})
+                Último Escaneamento:{" "}
+                {new Date(lastTracking.updatedAt).toLocaleDateString()} às{" "}
+                {new Date(lastTracking.updatedAt).toLocaleTimeString()} em{" "}
+                {lastTracking.localizacao} (Status: {lastTracking.status})
               </h3>
             ) : (
               <h3 className="text-white font-questrial text-5xl">
@@ -113,7 +159,8 @@ export default function LocationModalInstitution({
                       <strong>Status:</strong> {tracking.status}
                     </p>
                     <p className="text-white">
-                      <strong>Data:</strong> {new Date(tracking.updatedAt).toLocaleString()}
+                      <strong>Data:</strong>{" "}
+                      {new Date(tracking.updatedAt).toLocaleString()}
                     </p>
                   </div>
                 ))

@@ -1,3 +1,6 @@
+// EU02: "Eu como usuário quero fazer login com meus dados"
+// EU12: "Eu como instituição quero fazer login com meus dados"
+
 "use client";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -11,34 +14,78 @@ import * as Yup from "yup";
 import axios from "axios";
 import Link from "next/link";
 
+/**
+ * Componente de página de Login.
+ *
+ * @component
+ */
 export default function Login() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isInstitution, setIsInstitution] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const router = useRouter()
+  const router = useRouter();
 
+  /**
+   * Manipula a mudança da imagem de perfil.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - O evento de mudança do input.
+   * @returns {void}
+   *
+   * @pre Um arquivo de imagem deve ser selecionado pelo usuário.
+   * @post Atualiza o estado com a nova URL da imagem selecionada.
+   */
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setProfileImage(URL.createObjectURL(e.target.files[0]));
     }
   };
 
+  /**
+   * Função para abrir o seletor de arquivos ao clicar na imagem de perfil.
+   *
+   * @returns {void}
+   *
+   * @pre O input de arquivo deve estar disponível no DOM.
+   * @post Abre o seletor de arquivos.
+   */
   const handleImageClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
+  /**
+   * Alterna a visibilidade da senha.
+   *
+   * @returns {void}
+   *
+   * @post Alterna o estado de visibilidade da senha entre visível e oculto.
+   */
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
+  /**
+   * Esquema de validação para o formulário de login.
+   *
+   * @constant
+   */
   const loginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Required"),
     senha: Yup.string().required("Required"),
   });
 
+  /**
+   * Função para processar o envio do formulário de login.
+   *
+   * @async
+   * @param {object} values - Os valores do formulário.
+   * @returns {Promise<void>}
+   *
+   * @pre O usuário deve fornecer um email e senha válidos.
+   * @post Se o login for bem-sucedido, o token é armazenado no localStorage e o usuário é redirecionado.
+   */
   const handleSubmit = async (values: any) => {
     console.log(values);
     try {
@@ -47,19 +94,18 @@ export default function Login() {
         senha: values.senha,
         userType: values.userType,
       });
-  
+
       const token = response.data.access_token;
-      
+
       localStorage.setItem("token", token);
       console.log(response.data);
       alert("Login successful!");
-      router.push('/Feed');
+      router.push("/Feed");
     } catch (error) {
       console.error(error);
       alert("Login failed. Please check your credentials.");
     }
   };
-  
 
   return (
     <div className="h-screen flex">
@@ -116,9 +162,19 @@ export default function Login() {
                     className="absolute right-4 top-[50%] transform text-darkBlue text-xl"
                   >
                     {passwordVisible ? (
-                      <Image src={hide} alt="Hide password" width={24} height={24} />
+                      <Image
+                        src={hide}
+                        alt="Hide password"
+                        width={24}
+                        height={24}
+                      />
                     ) : (
-                      <Image src={show} alt="Show password" width={24} height={24} />
+                      <Image
+                        src={show}
+                        alt="Show password"
+                        width={24}
+                        height={24}
+                      />
                     )}
                   </button>
                   <ErrorMessage
@@ -134,7 +190,12 @@ export default function Login() {
                     id="instituicao"
                     name="instituicao"
                     className="w-10 h-10 text-lightBlue bg-darkBlue focus:ring-white font-questrial mr-5"
-                    onChange={(e) => setFieldValue("userType", e.target.checked ? "instituicao" : "user")}
+                    onChange={(e) =>
+                      setFieldValue(
+                        "userType",
+                        e.target.checked ? "instituicao" : "user"
+                      )
+                    }
                   />
                   <label
                     htmlFor="instituicao"
