@@ -1,4 +1,11 @@
+/**
+ * Componente de Registro para usuários e instituições.
+ *
+ * @module Register
+ * @returns {JSX.Element} - Retorna o JSX do componente de Registro.
+ */
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
@@ -6,24 +13,53 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 
+/**
+ * Esquema de validação usando Yup para o formulário de registro.
+ *
+ * @constant
+ */
 const RegisterSchema = Yup.object().shape({
   nomeCompleto: Yup.string().required("Nome Completo é obrigatório"),
   endereco: Yup.string().required("Endereço é obrigatório"),
   email: Yup.string().email("E-mail inválido").required("E-mail é obrigatório"),
-  senha: Yup.string().min(6, "A senha deve ter no mínimo 6 caracteres").required("Senha é obrigatória"),
+  senha: Yup.string()
+    .min(6, "A senha deve ter no mínimo 6 caracteres")
+    .required("Senha é obrigatória"),
   instituicao: Yup.boolean(),
 });
 
+/**
+ * Função principal do componente de Registro.
+ *
+ * @returns {JSX.Element} - JSX do formulário de cadastro.
+ */
 export default function Register() {
+  /** @type {string} formError - Estado para armazenar erros de formulário. */
   const [formError, setFormError] = useState("");
+
+  /** @type {string} profileImage - Estado para armazenar a URL da imagem de perfil. */
   const [profileImage, setProfileImage] = useState("/profilepic.svg");
+
+  /** @type {boolean} passwordVisible - Estado para controlar a visibilidade da senha. */
   const [passwordVisible, setPasswordVisible] = useState(false);
+
   const router = useRouter();
 
+  /**
+   * Alterna a visibilidade da senha.
+   *
+   * @function togglePasswordVisibility
+   */
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
   };
 
+  /**
+   * Manipula o upload da imagem de perfil.
+   *
+   * @function handleImageUpload
+   * @param {React.ChangeEvent<HTMLInputElement>} event - Evento de mudança no campo de upload de arquivo.
+   */
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -32,6 +68,15 @@ export default function Register() {
     }
   };
 
+  /**
+   * Manipula o envio do formulário de registro.
+   *
+   * @async
+   * @function handleSubmit
+   * @param {object} values - Valores do formulário.
+   * @param {object} param1 - Objeto Formik contendo a função setSubmitting.
+   * @throws {Error} - Lança um erro se o registro falhar.
+   */
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setFormError("");
     console.log(values);
@@ -41,7 +86,13 @@ export default function Register() {
         : "http://localhost:3001/users";
 
       const formData = new FormData();
-      
+
+      /**
+       * @assert {string} values.nomeCompleto - Nome completo é obrigatório.
+       * @assert {string} values.email - E-mail deve ser válido e obrigatório.
+       * @assert {string} values.senha - Senha deve ter no mínimo 6 caracteres.
+       * @assert {string} values.endereco - Endereço é obrigatório.
+       */
       if (values.instituicao) {
         formData.append("razaoSocial", values.nomeCompleto);
       } else {
@@ -52,9 +103,15 @@ export default function Register() {
       formData.append("senha", values.senha);
       formData.append("endereco", values.endereco);
 
-      const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+      const fileInput = document.getElementById(
+        "file-upload"
+      ) as HTMLInputElement;
       if (fileInput?.files?.[0]) {
-        formData.append("fotoPerfil", fileInput.files[0], fileInput.files[0].name);
+        formData.append(
+          "fotoPerfil",
+          fileInput.files[0],
+          fileInput.files[0].name
+        );
       }
 
       console.log("formData:", formData.values);
@@ -64,12 +121,22 @@ export default function Register() {
           "Content-Type": "multipart/form-data",
         },
       });
-      
-      console.log(`${values.instituicao ? "Institution" : "User"} created successfully:`, response.data);
-      alert(`${values.instituicao ? "Institution" : "User"} criado com sucesso! Você será redirecionado para o login agora.`)
-      router.push('/Login');
+
+      console.log(
+        `${values.instituicao ? "Institution" : "User"} created successfully:`,
+        response.data
+      );
+      alert(
+        `${
+          values.instituicao ? "Institution" : "User"
+        } criado com sucesso! Você será redirecionado para o login agora.`
+      );
+      router.push("/Login");
     } catch (error: any) {
-      setFormError(error.response?.data?.message || `Erro ao criar ${values.instituicao ? "instituição" : "usuário"}`);
+      setFormError(
+        error.response?.data?.message ||
+          `Erro ao criar ${values.instituicao ? "instituição" : "usuário"}`
+      );
     } finally {
       setSubmitting(false);
     }
@@ -78,7 +145,9 @@ export default function Register() {
   return (
     <div className="bg-gradient-to-r from-lightBlue to-darkBlue h-screen w-screen flex">
       <div className="h-screen w-1/2 bg-white flex items-center flex-col">
-        <h1 className="text-lightBlue font-questrial text-8xl pt-7">Cadastro</h1>
+        <h1 className="text-lightBlue font-questrial text-8xl pt-7">
+          Cadastro
+        </h1>
         <div className="bg-lightBlue h-4/5 w-4/6 mt-5 rounded-2xl flex items-center flex-col overflow-hidden">
           <div className="relative w-32 h-32 mt-5 rounded-full overflow-hidden">
             <label
