@@ -1,3 +1,6 @@
+// EU08: "Eu como transportador quero escanear o qrcode e atualizar o rastreamento"
+// EU09: "Eu como transportador quero adicionar fotos e videos relacionados à entrega"
+
 /**
  * Componente de Rastreamento para exibir e enviar informações de rastreamento de doações.
  *

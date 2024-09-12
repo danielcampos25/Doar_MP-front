@@ -1,3 +1,11 @@
+// EU05: "Eu como usuário quero acompanhar o status da minha doação"
+// EU06: "Eu como usuário quero ter um o qrcode das minhas doações"
+// EU07: "Eu como usuário quero visualizar e imprimir um o qrcode das minhas doações"
+// EU10: "Eu como instituição quero confirmar a entrega de uma doação"
+// EU13: "Eu como instituição quero visualizar as doações enviadas para mim"
+// EU14: "Eu como instituição quero acompanhar as minhas doações"
+// EU15: "Eu como instituição quero visualizar e imprimir um o qrcode das minhas doações"
+
 import Image from "next/image";
 import { useRef } from "react";
 

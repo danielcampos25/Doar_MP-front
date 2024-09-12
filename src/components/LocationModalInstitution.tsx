@@ -1,3 +1,8 @@
+// EU10: "Eu como instituição quero confirmar a entrega de uma doação"
+// EU13: "Eu como instituição quero visualizar as doações enviadas para mim"
+// EU14: "Eu como instituição quero acompanhar as minhas doações"
+// EU15: "Eu como instituição quero visualizar e imprimir um o qrcode das minhas doações"
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";

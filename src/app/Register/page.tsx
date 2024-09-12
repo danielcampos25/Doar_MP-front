@@ -1,3 +1,6 @@
+// EU01: "Eu como usuário quero me cadastrar no sistema"
+// EU11: "Eu como instituição quero me cadastrar no sistema"
+
 /**
  * Componente de Registro para usuários e instituições.
  *

@@ -1,3 +1,8 @@
+// EU04: "Eu como usuário quero visualizar minhas doações"
+// EU05: "Eu como usuário quero acompanhar o status da minha doação"
+// EU06: "Eu como usuário quero ter um o qrcode das minhas doações"
+// EU07: "Eu como usuário quero visualizar e imprimir um o qrcode das minhas doações"
+
 /**
  * Componente de Perfil do Usuário.
  *

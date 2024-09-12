@@ -1,3 +1,6 @@
+// EU02: "Eu como usuário quero fazer login com meus dados"
+// EU12: "Eu como instituição quero fazer login com meus dados"
+
 "use client";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
